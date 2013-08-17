@@ -19,7 +19,8 @@ import com.michaldabski.msqlite.queries.Drop;
 
 public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 {
-	
+
+	// Constructors
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public MSQLiteOpenHelper(Context context, String name, CursorFactory factory,
 			int version, DatabaseErrorHandler errorHandler) {
@@ -31,22 +32,38 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		super(context, name, factory, version);
 	}
 
+	// Static methods
 	public static void createTable(SQLiteDatabase database, Class<?> type, boolean ifNotExist)
 	{
 		database
 			.execSQL(new CreateTable(type).setIF_NOT_EXIST(ifNotExist).build());
 	}
 	
+	/**
+	 * Drops table in the database
+	 * @param database SQLite database
+	 * @param type Class of the database to be dropped
+	 */
 	public static void dropTable(SQLiteDatabase database, Class<?> type)
 	{
 		database.execSQL(new Drop(type).build());
 	}
 	
+	/**
+	 * Delete Rows from database. Wrapper for SQLiteDatabase.delete()
+	 */
 	public static void deleteFrom(SQLiteDatabase database, Class<?> type, String whereClause, String [] whereArgs)
 	{
 		database.delete(new Table(type).getName(), whereClause, whereArgs);
 	}
 	
+	/**
+	 * Query database for a number of rows
+	 * @param database SQLiteDatabase to use
+	 * @param type Type of object expected
+	 * @return List of objects selected from database
+	 * @throws InstantiationException Exception thrown if selected type could not be instantiated.
+	 */
 	public static <T> List<T> select(SQLiteDatabase database, Class<T> type, String selection, String [] selectionArgs, String orderBy, String limit) throws InstantiationException
 	{
 		List<T> result = new ArrayList<T>();
@@ -60,19 +77,9 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		return result;
 	}
 	
-	public <T> List<T> select(Class<T> type, String selection, String [] selectionArgs, String orderBy, String limit) throws InstantiationException
-	{
-		SQLiteDatabase database = getReadableDatabase();
-		List<T> result = select(database, type, selection, selectionArgs, orderBy, limit);
-		database.close();
-		return result;
-	}
-	
-	public <T> List<T> selectAll(Class<T> type) throws InstantiationException
-	{
-		return select(type, null, null, null, null);
-	}
-	
+	/**
+	 * Insert multiple rows into database
+	 */
 	public static void insert(SQLiteDatabase database, Collection<?> items)
 	{
 		for (Object row : items)
@@ -81,6 +88,31 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		}
 	}
 	
+	/**
+	 * Selects multiple rows from an array. 
+	 * This method gets its own instance of Database
+	 */
+	public <T> List<T> select(Class<T> type, String selection, String [] selectionArgs, String orderBy, String limit) throws InstantiationException
+	{
+		SQLiteDatabase database = getReadableDatabase();
+		List<T> result = select(database, type, selection, selectionArgs, orderBy, limit);
+		database.close();
+		return result;
+	}
+	
+	/**
+	 * Selected all rows from given table
+	 */
+	public <T> List<T> selectAll(Class<T> type) throws InstantiationException
+	{
+		return select(type, null, null, null, null);
+	}
+	
+	/**
+	 * Insert single row to database
+	 * If one of the fields is a Private Key, id will be assigned to it.
+	 * @return id of the row
+	 */
 	public static long insert(SQLiteDatabase database, Object item)
 	{
 		Table table = new Table(item.getClass());
@@ -89,6 +121,11 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		return id;
 	}
 	
+	/**
+	 * Insert single row to database.
+	 * If one of the fields is a Private Key, id will be assigned to it.
+	 * This method creates new instance of SQLiteDatabase
+	 */
 	public long insert(Object item)
 	{
 		SQLiteDatabase database = getWritableDatabase();
@@ -97,6 +134,11 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		return insertId;
 	}
 	
+	/**
+	 * Insert multiple rows to database.
+	 * If one of the fields is a Private Key, id will be assigned to it.
+	 * This method creates new instance of SQLiteDatabase
+	 */
 	public void insert(Collection<?> items)
 	{
 		SQLiteDatabase database = getWritableDatabase();
@@ -104,6 +146,12 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		database.close();
 	}
 	
+	/**
+	 * Runs a create table query on the database.
+	 * This method creates new instance of SQLiteDatabase
+	 * @param type Class defining the table
+	 * @param ifNotExist table will not be created if already exists in database
+	 */
 	public void createTable(Class<?> type, boolean ifNotExist)
 	{
 		SQLiteDatabase database = getWritableDatabase();
