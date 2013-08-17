@@ -47,7 +47,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		database.delete(new Table(type).getName(), whereClause, whereArgs);
 	}
 	
-	public static <T> List<T> select(SQLiteDatabase database, Class<T> type, String selection, String [] selectionArgs, String orderBy, String limit)
+	public static <T> List<T> select(SQLiteDatabase database, Class<T> type, String selection, String [] selectionArgs, String orderBy, String limit) throws InstantiationException
 	{
 		List<T> result = new ArrayList<T>();
 		Table table = new Table(type);
@@ -55,18 +55,12 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		Cursor cursor = database.query(table.getName(), null, selection, selectionArgs, null, null, orderBy, limit);
 		while (cursor.moveToNext())
 		{
-			try
-			{
-				result.add(table.getRow(cursor, type));
-			} catch (InstantiationException e)
-			{
-				e.printStackTrace();
-			}
+			result.add(table.getRow(cursor, type));
 		}
 		return result;
 	}
 	
-	public <T> List<T> select(Class<T> type, String selection, String [] selectionArgs, String orderBy, String limit)
+	public <T> List<T> select(Class<T> type, String selection, String [] selectionArgs, String orderBy, String limit) throws InstantiationException
 	{
 		SQLiteDatabase database = getReadableDatabase();
 		List<T> result = select(database, type, selection, selectionArgs, orderBy, limit);
@@ -74,7 +68,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		return result;
 	}
 	
-	public <T> List<T> selectAll(Class<T> type)
+	public <T> List<T> selectAll(Class<T> type) throws InstantiationException
 	{
 		return select(type, null, null, null, null);
 	}
