@@ -80,11 +80,12 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	/**
 	 * Insert multiple rows into database
 	 */
-	public static void insert(SQLiteDatabase database, Collection<?> items)
+	public static<T> void insert(SQLiteDatabase database, Class<T> typeOfItem, Collection<T> items)
 	{
+		Table table = new Table(typeOfItem);
 		for (Object row : items)
 		{
-			insert(database, row);
+			insert(database, table, row);
 		}
 	}
 	
@@ -115,7 +116,11 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 */
 	public static long insert(SQLiteDatabase database, Object item)
 	{
-		Table table = new Table(item.getClass());
+		return insert(database, new Table(item.getClass()), item);
+	}
+	
+	private static long insert(SQLiteDatabase database, Table table, Object item)
+	{
 		long id = database.insert(table.getName(), null, table.getContentValues(item));
 		table.setRowID(item, id);
 		return id;
@@ -139,10 +144,10 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 * If one of the fields is a Private Key, id will be assigned to it.
 	 * This method creates new instance of SQLiteDatabase
 	 */
-	public void insert(Collection<?> items)
+	public <T> void insert(Class<T> classOfItem, Collection<T> items)
 	{
 		SQLiteDatabase database = getWritableDatabase();
-		insert(database, items);
+		insert(database, classOfItem, items);
 		database.close();
 	}
 	
