@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import android.annotation.TargetApi;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
@@ -112,18 +113,27 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	/**
 	 * Update row(s) with values in given object.
 	 */
-	public static void update(SQLiteDatabase database, Table table, Object object, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
+	private static void update(SQLiteDatabase database, Table table, Object object, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
 	{
 		database.update(table.getName(), table.getContentValues(object), whereClause, whereArgs);
+		update(database, table, table.getContentValues(object), whereClause, whereArgs);
 	}
 	
-	/**
-	 * Update row(s) with values in given object.
-	 */
-	public static void update(SQLiteDatabase database, Table table, Object object, Collection<String> columns, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
+	private static void update(SQLiteDatabase database, Table table, Object object, Collection<String> columns, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
 	{
-		database.update(table.getName(), table.getContentValues(object, columns), whereClause, whereArgs);
+		update(database, table, table.getContentValues(object, columns), whereClause, whereArgs);
 	}
+	
+	public static void update(SQLiteDatabase database, Object object, Collection<String> columns, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
+	{
+		Table table = new Table(object.getClass());
+		update(database, table, object, columns, table.getPrimaryWhereClause(), table.getPrimaryWhereArgs(object));
+	}
+	
+	private static void update(SQLiteDatabase database, Table table, ContentValues contentValues, String whereClause, String [] whereArgs)
+	{
+		database.update(table.getName(), contentValues, whereClause, whereArgs);
+	}	
 	
 	/**
 	 * Convenience method for static {@code update()}
