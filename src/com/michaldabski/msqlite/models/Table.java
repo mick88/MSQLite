@@ -10,12 +10,35 @@ import com.michaldabski.msqlite.DataTypes;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+/**
+ * Represents a table in SQLite database. 
+ * 
+ * An instance of Table can be created from java Class definition.
+ * 
+ * @author Michal
+ *
+ */
 public class Table
 {
 	protected final String name;
 	protected final List<Column> columns;
 	protected final List<Column> primaryKeys;
 	
+	/**
+	 * Create Table from java class definition
+	 * 
+	 * All fields that are not static, final or transient, 
+	 * will become columns in the table as long 
+	 * as they are of any of the supported type.
+	 * Supported types are currently most primitives,like
+	 * int, long, short, float, double etc, and
+	 * their wrappers: Integer, Float etc.
+	 * and String.
+	 * 
+	 * If field has unsupported type, warning will be output to LogCat.
+	 * 
+	 * @param type Class to be used, must have an empty constructor
+	 */
 	public Table(Class<?> type)
 	{
 		this.name = type.getSimpleName();
@@ -58,11 +81,22 @@ public class Table
 			primaryKey.setValue(object, id);
 	}
 	
+	/**
+	 * Getter for table name.
+	 * 
+	 * Current implementation of Table 
+	 * generates name from Class.getSimpleName()
+	 * 
+	 * @return table name generated from table name.
+	 */
 	public String getName()
 	{
 		return name;
 	}
 	
+	/**
+	 * Gets list of columns in this Table
+	 */
 	public List<Column> getColumns()
 	{
 		return columns;
@@ -107,6 +141,13 @@ public class Table
 		return values;
 	}
 	
+	/**
+	 * Reads SQLite row and converts it into java object.
+	 * @param cursor 
+	 * @param type Class to be instantiated. Must have an empty constructor and fields should match table definition.
+	 * @return Instance of type
+	 * @throws InstantiationException exception thrown when type doesnt instantiate successfully (No empty constructor?)
+	 */
 	public <T> T getRow(Cursor cursor, Class<T> type) throws InstantiationException
 	{
 		T result = null;
@@ -130,6 +171,7 @@ public class Table
 		return result;
 	}
 	
+	@Deprecated
 	public Object[] getValues(Object object)
 	{
 		Object [] result = new Object[columns.size()];
