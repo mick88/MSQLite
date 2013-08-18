@@ -115,6 +115,20 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	}
 	
 	/**
+	 * Convenience method for static {@code update()}
+	 * Gets its own instance of Writable database and disposes of it afterwards
+	 * @param object
+	 * @throws NoSuchFieldException 
+	 * @throws IllegalArgumentException 
+	 */
+	public void update(Object object) throws IllegalArgumentException, NoSuchFieldException
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		update(database, object);
+		database.close();
+	}
+	
+	/**
 	 * Selects multiple rows from an array. 
 	 * This method gets its own instance of Database
 	 */
