@@ -106,12 +106,15 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	public static void update(SQLiteDatabase database, Object object) throws IllegalArgumentException, NoSuchFieldException
 	{
 		Table table = new Table(object.getClass());
-		update(database, table, table.getPrimaryWhereClause(), object);
+		update(database, table, object, table.getPrimaryWhereClause(), table.getPrimaryWhereArgs(object));
 	}
 	
-	private static void update(SQLiteDatabase database, Table table, String primaryWhereClause, Object object) throws IllegalArgumentException, NoSuchFieldException
+	/**
+	 * Update row(s) with values in given object.
+	 */
+	public static void update(SQLiteDatabase database, Table table, Object object, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
 	{
-		database.update(table.getName(), table.getContentValues(object), primaryWhereClause, table.getPrimaryWhereArgs(object));
+		database.update(table.getName(), table.getContentValues(object), whereClause, whereArgs);
 	}
 	
 	/**
