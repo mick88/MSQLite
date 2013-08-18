@@ -90,6 +90,29 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	}
 	
 	/**
+	 * Update corresponding row in the database.
+	 * 
+	 * Object must declare at least one primary key and values of 
+	 * primary keys must be the same as values for this row existing 
+	 * in the database.
+	 * 
+	 * @param database database to use
+	 * @param object an object to be updated, must have at least 1 PrimaryKey
+	 * @throws NoSuchFieldException 
+	 * @throws IllegalArgumentException 
+	 */
+	public static void update(SQLiteDatabase database, Object object) throws IllegalArgumentException, NoSuchFieldException
+	{
+		Table table = new Table(object.getClass());
+		update(database, table, table.getPrimaryWhereClause(), object);
+	}
+	
+	private static void update(SQLiteDatabase database, Table table, String primaryWhereClause, Object object) throws IllegalArgumentException, NoSuchFieldException
+	{
+		database.update(table.getName(), table.getContentValues(object), primaryWhereClause, table.getPrimaryWhereArgs(object));
+	}
+	
+	/**
 	 * Selects multiple rows from an array. 
 	 * This method gets its own instance of Database
 	 */
@@ -146,6 +169,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 */
 	public <T> void insert(Class<T> classOfItem, Collection<T> items)
 	{
+		
 		SQLiteDatabase database = getWritableDatabase();
 		insert(database, classOfItem, items);
 		database.close();

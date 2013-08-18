@@ -141,6 +141,31 @@ public class Table
 		return values;
 	}
 	
+	public String getPrimaryWhereClause()
+	{
+		StringBuilder builder = new StringBuilder();
+		String glue = "";
+		for (Column col : primaryKeys)
+		{
+			builder.append(glue)
+			.append('`').append(col.name).append('`')
+			.append('=')
+			.append('?');
+		}
+		
+		return builder.toString();
+	}
+	
+	public String [] getPrimaryWhereArgs(Object object) throws IllegalArgumentException, NoSuchFieldException
+	{
+		String [] result = new String[primaryKeys.size()];
+
+		for (int i=0; i < result.length; i++)
+			result[i] = primaryKeys.get(i).getValue(object).toString();
+		
+		return result;
+	}
+	
 	/**
 	 * Reads SQLite row and converts it into java object.
 	 * @param cursor 
