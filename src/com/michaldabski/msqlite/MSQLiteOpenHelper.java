@@ -136,7 +136,26 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	private static int update(SQLiteDatabase database, Table table, ContentValues contentValues, String whereClause, String [] whereArgs)
 	{
 		return database.update(table.getName(), contentValues, whereClause, whereArgs);
-	}	
+	}
+	
+	/**
+	 * Update multiple rows in database
+	 * @param database database to use
+	 * @param type Type of objects updated
+	 * @param objects Collection of objects to be updated
+	 * @return Collective number of affected rows
+	 */
+	public static <T> int update(SQLiteDatabase database, Class<T> type, Collection<T> objects)
+	{
+		Table table = new Table(type);
+		String whereClause = table.getPrimaryWhereClause();
+		int affectedRows = 0;
+		
+		for (T object : objects)
+			affectedRows = update(database, table, object, whereClause, table.getPrimaryWhereArgs(object));
+		
+		return affectedRows;
+	}
 	
 	/**
 	 * Convenience method for static {@code update()}
@@ -153,6 +172,21 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		
 		return affectedRows;
 	}
+	
+	/**
+	 * Convenience method for calling static version of this method.
+	 * 
+	 * This method gets it's own instance of {@link SQLiteDatabase} and closes it afterwards.
+	 */
+	public <T> int update(Class<T> type, Collection<T> objects)
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		int affectedRows = update(database, type, objects);
+		database.close();
+		
+		return affectedRows;
+	}
+	
 	
 	/**
 	 * Selects multiple rows from an array. 
