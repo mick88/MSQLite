@@ -5,6 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.michaldabski.msqlite.DataTypes;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 
@@ -31,11 +33,24 @@ public class Table
 		}
 	}
 	
-	public void setRowID(Object object, long id)
+	public Column getIntegerPrimaryKey()
 	{
 		Column primaryKey = getPrimaryKey();
-		if (primaryKey == null) return;
-		primaryKey.setValue(object, id);
+		if (primaryKey == null || primaryKey.getDataType() != DataTypes.DATA_TYPE_INTEGER) return null;
+		return primaryKey;
+	}
+	
+	/**
+	 * Set value to the integer primary key
+	 * Fails silently if none exists
+	 * @param object row object
+	 * @param id rowid
+	 */
+	public void setRowID(Object object, long id)
+	{
+		Column primaryKey = getIntegerPrimaryKey();
+		if (primaryKey != null)
+			primaryKey.setValue(object, id);
 	}
 	
 	public String getName()
