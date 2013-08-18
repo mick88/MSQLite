@@ -118,6 +118,14 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	}
 	
 	/**
+	 * Update row(s) with values in given object.
+	 */
+	public static void update(SQLiteDatabase database, Table table, Object object, Collection<String> columns, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
+	{
+		database.update(table.getName(), table.getContentValues(object, columns), whereClause, whereArgs);
+	}
+	
+	/**
 	 * Convenience method for static {@code update()}
 	 * Gets its own instance of Writable database and disposes of it afterwards
 	 * @param object
