@@ -101,8 +101,6 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 * 
 	 * @param database database to use
 	 * @param object an object to be updated, must have at least 1 PrimaryKey
-	 * @throws NoSuchFieldException 
-	 * @throws IllegalArgumentException 
 	 */
 	public static int update(SQLiteDatabase database, Object object)
 	{
@@ -161,10 +159,8 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 * Convenience method for static {@code update()}
 	 * Gets its own instance of Writable database and disposes of it afterwards
 	 * @param object
-	 * @throws NoSuchFieldException 
-	 * @throws IllegalArgumentException 
 	 */
-	public int update(Object object) throws IllegalArgumentException, NoSuchFieldException
+	public int update(Object object)
 	{
 		SQLiteDatabase database = getWritableDatabase();
 		int affectedRows = update(database, object);
