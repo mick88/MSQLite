@@ -104,35 +104,35 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 * @throws NoSuchFieldException 
 	 * @throws IllegalArgumentException 
 	 */
-	public static void update(SQLiteDatabase database, Object object) throws IllegalArgumentException, NoSuchFieldException
+	public static int update(SQLiteDatabase database, Object object) throws IllegalArgumentException, NoSuchFieldException
 	{
 		Table table = new Table(object.getClass());
-		update(database, table, object, table.getPrimaryWhereClause(), table.getPrimaryWhereArgs(object));
+		return update(database, table, object, table.getPrimaryWhereClause(), table.getPrimaryWhereArgs(object));
 	}
 	
 	/**
 	 * Update row(s) with values in given object.
 	 */
-	private static void update(SQLiteDatabase database, Table table, Object object, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
+	private static int update(SQLiteDatabase database, Table table, Object object, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
 	{
 		database.update(table.getName(), table.getContentValues(object), whereClause, whereArgs);
-		update(database, table, table.getContentValues(object), whereClause, whereArgs);
+		return update(database, table, table.getContentValues(object), whereClause, whereArgs);
 	}
 	
-	private static void update(SQLiteDatabase database, Table table, Object object, Collection<String> columns, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
+	private static int update(SQLiteDatabase database, Table table, Object object, Collection<String> columns, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
 	{
-		update(database, table, table.getContentValues(object, columns), whereClause, whereArgs);
+		return update(database, table, table.getContentValues(object, columns), whereClause, whereArgs);
 	}
 	
-	public static void update(SQLiteDatabase database, Object object, Collection<String> columns, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
+	public static int update(SQLiteDatabase database, Object object, Collection<String> columns, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
 	{
 		Table table = new Table(object.getClass());
-		update(database, table, object, columns, table.getPrimaryWhereClause(), table.getPrimaryWhereArgs(object));
+		return update(database, table, object, columns, table.getPrimaryWhereClause(), table.getPrimaryWhereArgs(object));
 	}
 	
-	private static void update(SQLiteDatabase database, Table table, ContentValues contentValues, String whereClause, String [] whereArgs)
+	private static int update(SQLiteDatabase database, Table table, ContentValues contentValues, String whereClause, String [] whereArgs)
 	{
-		database.update(table.getName(), contentValues, whereClause, whereArgs);
+		return database.update(table.getName(), contentValues, whereClause, whereArgs);
 	}	
 	
 	/**
@@ -142,11 +142,13 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 * @throws NoSuchFieldException 
 	 * @throws IllegalArgumentException 
 	 */
-	public void update(Object object) throws IllegalArgumentException, NoSuchFieldException
+	public int update(Object object) throws IllegalArgumentException, NoSuchFieldException
 	{
 		SQLiteDatabase database = getWritableDatabase();
-		update(database, object);
+		int affectedRows = update(database, object);
 		database.close();
+		
+		return affectedRows;
 	}
 	
 	/**
