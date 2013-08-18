@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import android.annotation.TargetApi;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
@@ -90,6 +91,104 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	}
 	
 	/**
+	 * Update corresponding row in the database.
+	 * 
+	 * All values in existing row will be updated with values in the object.
+	 * 
+	 * Object must declare at least one primary key and values of 
+	 * primary keys must be the same as values for this row existing 
+	 * in the database.
+	 * 
+	 * @param database database to use
+	 * @param object an object to be updated, must have at least 1 PrimaryKey
+	 * @throws NoSuchFieldException 
+	 * @throws IllegalArgumentException 
+	 */
+	public static int update(SQLiteDatabase database, Object object)
+	{
+		Table table = new Table(object.getClass());
+		return update(database, table, object, table.getPrimaryWhereClause(), table.getPrimaryWhereArgs(object));
+	}
+	
+	/**
+	 * Update row(s) with values in given object.
+	 */
+	private static int update(SQLiteDatabase database, Table table, Object object, String whereClause, String[] whereArgs)
+	{
+		database.update(table.getName(), table.getContentValues(object), whereClause, whereArgs);
+		return update(database, table, table.getContentValues(object), whereClause, whereArgs);
+	}
+	
+	private static int update(SQLiteDatabase database, Table table, Object object, Collection<String> columns, String whereClause, String[] whereArgs)
+	{
+		return update(database, table, table.getContentValues(object, columns), whereClause, whereArgs);
+	}
+	
+	/**
+	 * Update selected columns with values form this object
+	 */
+	public static int update(SQLiteDatabase database, Object object, Collection<String> columns, String whereClause, String[] whereArgs)
+	{
+		Table table = new Table(object.getClass());
+		return update(database, table, object, columns, table.getPrimaryWhereClause(), table.getPrimaryWhereArgs(object));
+	}
+	
+	private static int update(SQLiteDatabase database, Table table, ContentValues contentValues, String whereClause, String [] whereArgs)
+	{
+		return database.update(table.getName(), contentValues, whereClause, whereArgs);
+	}
+	
+	/**
+	 * Update multiple rows in database
+	 * @param database database to use
+	 * @param type Type of objects updated
+	 * @param objects Collection of objects to be updated
+	 * @return Collective number of affected rows
+	 */
+	public static <T> int update(SQLiteDatabase database, Class<T> type, Collection<T> objects)
+	{
+		Table table = new Table(type);
+		String whereClause = table.getPrimaryWhereClause();
+		int affectedRows = 0;
+		
+		for (T object : objects)
+			affectedRows += update(database, table, object, whereClause, table.getPrimaryWhereArgs(object));
+		
+		return affectedRows;
+	}
+	
+	/**
+	 * Convenience method for static {@code update()}
+	 * Gets its own instance of Writable database and disposes of it afterwards
+	 * @param object
+	 * @throws NoSuchFieldException 
+	 * @throws IllegalArgumentException 
+	 */
+	public int update(Object object) throws IllegalArgumentException, NoSuchFieldException
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		int affectedRows = update(database, object);
+		database.close();
+		
+		return affectedRows;
+	}
+	
+	/**
+	 * Convenience method for calling static version of this method.
+	 * 
+	 * This method gets it's own instance of {@link SQLiteDatabase} and closes it afterwards.
+	 */
+	public <T> int update(Class<T> type, Collection<T> objects)
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		int affectedRows = update(database, type, objects);
+		database.close();
+		
+		return affectedRows;
+	}
+	
+	
+	/**
 	 * Selects multiple rows from an array. 
 	 * This method gets its own instance of Database
 	 */
@@ -146,6 +245,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 */
 	public <T> void insert(Class<T> classOfItem, Collection<T> items)
 	{
+		
 		SQLiteDatabase database = getWritableDatabase();
 		insert(database, classOfItem, items);
 		database.close();

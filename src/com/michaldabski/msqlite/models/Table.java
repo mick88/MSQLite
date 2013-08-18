@@ -3,7 +3,10 @@ package com.michaldabski.msqlite.models;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.michaldabski.msqlite.DataTypes;
 
@@ -139,6 +142,73 @@ public class Table
 			}			
 		}
 		return values;
+	}
+	
+	/**
+	 * Get content values only for selected columns
+	 * @param object Object from which values are used
+	 * @param colNames Subset of object's field names to use
+	 */
+	public ContentValues getContentValues(Object object, Collection<String> colNames)
+	{
+		ContentValues values = new ContentValues(columns.size());
+		for (Column column : columns)
+			if (colNames.contains(column.name))
+		{
+			Object value;
+			try
+			{
+				value = column.getValue(object);
+				if (value == null) values.putNull(column.name);
+				else values.put(column.name, value.toString());
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+				values.putNull(column.name);
+			}			
+		}
+		return values;
+	}
+	
+	public String getPrimaryWhereClause()
+	{
+		StringBuilder builder = new StringBuilder();
+		String glue = "";
+		for (Column col : primaryKeys)
+		{
+			builder.append(glue)
+			.append('`').append(col.name).append('`')
+			.append('=')
+			.append('?');
+		}
+		
+		return builder.toString();
+	}
+	
+	public String [] getPrimaryWhereArgs(Object object)
+	{
+		String [] result = new String[primaryKeys.size()];
+
+		for (int i=0; i < result.length; i++)
+		{
+			try
+			{
+				Object value = primaryKeys.get(i).getValue(object);
+				
+				if (value == null) result[i] = null;
+				else result[i] = value.toString();
+			} catch (IllegalArgumentException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchFieldException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
