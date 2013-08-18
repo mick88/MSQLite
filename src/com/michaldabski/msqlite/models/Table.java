@@ -193,7 +193,10 @@ public class Table
 		{
 			try
 			{
-				result[i] = primaryKeys.get(i).getValue(object).toString();
+				Object value = primaryKeys.get(i).getValue(object);
+				
+				if (value == null) result[i] = null;
+				else result[i] = value.toString();
 			} catch (IllegalArgumentException e)
 			{
 				// TODO Auto-generated catch block
