@@ -33,6 +33,11 @@ public class Table
 		}
 	}
 	
+	/**
+	 * Get INTEGER PRIMARY KEY column if one exists.
+	 * If primary key is not integer, or there are multiple
+	 * primary keys, returna null
+	 */
 	public Column getIntegerPrimaryKey()
 	{
 		Column primaryKey = getPrimaryKey();
