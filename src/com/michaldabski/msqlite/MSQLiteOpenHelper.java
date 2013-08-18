@@ -104,7 +104,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 * @throws NoSuchFieldException 
 	 * @throws IllegalArgumentException 
 	 */
-	public static int update(SQLiteDatabase database, Object object) throws IllegalArgumentException, NoSuchFieldException
+	public static int update(SQLiteDatabase database, Object object)
 	{
 		Table table = new Table(object.getClass());
 		return update(database, table, object, table.getPrimaryWhereClause(), table.getPrimaryWhereArgs(object));
@@ -113,18 +113,21 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	/**
 	 * Update row(s) with values in given object.
 	 */
-	private static int update(SQLiteDatabase database, Table table, Object object, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
+	private static int update(SQLiteDatabase database, Table table, Object object, String whereClause, String[] whereArgs)
 	{
 		database.update(table.getName(), table.getContentValues(object), whereClause, whereArgs);
 		return update(database, table, table.getContentValues(object), whereClause, whereArgs);
 	}
 	
-	private static int update(SQLiteDatabase database, Table table, Object object, Collection<String> columns, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
+	private static int update(SQLiteDatabase database, Table table, Object object, Collection<String> columns, String whereClause, String[] whereArgs)
 	{
 		return update(database, table, table.getContentValues(object, columns), whereClause, whereArgs);
 	}
 	
-	public static int update(SQLiteDatabase database, Object object, Collection<String> columns, String whereClause, String[] whereArgs) throws IllegalArgumentException, NoSuchFieldException
+	/**
+	 * Update selected columns with values form this object
+	 */
+	public static int update(SQLiteDatabase database, Object object, Collection<String> columns, String whereClause, String[] whereArgs)
 	{
 		Table table = new Table(object.getClass());
 		return update(database, table, object, columns, table.getPrimaryWhereClause(), table.getPrimaryWhereArgs(object));

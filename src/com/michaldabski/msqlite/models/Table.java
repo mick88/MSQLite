@@ -185,12 +185,25 @@ public class Table
 		return builder.toString();
 	}
 	
-	public String [] getPrimaryWhereArgs(Object object) throws IllegalArgumentException, NoSuchFieldException
+	public String [] getPrimaryWhereArgs(Object object)
 	{
 		String [] result = new String[primaryKeys.size()];
 
 		for (int i=0; i < result.length; i++)
-			result[i] = primaryKeys.get(i).getValue(object).toString();
+		{
+			try
+			{
+				result[i] = primaryKeys.get(i).getValue(object).toString();
+			} catch (IllegalArgumentException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchFieldException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 		return result;
 	}
