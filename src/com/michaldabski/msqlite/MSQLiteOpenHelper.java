@@ -152,7 +152,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		int affectedRows = 0;
 		
 		for (T object : objects)
-			affectedRows = update(database, table, object, whereClause, table.getPrimaryWhereArgs(object));
+			affectedRows += update(database, table, object, whereClause, table.getPrimaryWhereArgs(object));
 		
 		return affectedRows;
 	}
