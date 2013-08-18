@@ -92,6 +92,8 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	/**
 	 * Update corresponding row in the database.
 	 * 
+	 * All values in existing row will be updated with values in the object.
+	 * 
 	 * Object must declare at least one primary key and values of 
 	 * primary keys must be the same as values for this row existing 
 	 * in the database.
