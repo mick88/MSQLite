@@ -254,11 +254,20 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		return id;
 	}
 	
+	/**
+	 * Replace item into database.
+	 * If row already exists, it will be replaced. Otherwise new row is inserted,
+	 * @return id of the replaced row
+	 */
 	public static long replace(SQLiteDatabase database, Object item)
 	{
 		return replace(database, new Table(item.getClass()), item);
 	}
 	
+	/**
+	 * Replace items into database.
+	 * If row already exists, it will be replaced. Otherwise new row is inserted,
+	 */
 	public static <T> void replace(SQLiteDatabase database, Class<T> type, Collection<T> items)
 	{
 		Table table = new Table(type);
@@ -266,6 +275,10 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 			replace(database, table, item);
 	}
 	
+	/**
+	 * Convenience method for static method replace()
+	 * gets an instance of writable SQLiteDatabase and closes it afterwards.
+	 */
 	public <T> void replace(Class<T> type, Collection<T> items)
 	{
 		SQLiteDatabase database = getWritableDatabase();
@@ -273,6 +286,10 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		database.close();
 	}
 	
+	/**
+	 * Convenience method for static method replace()
+	 * gets an instance of writable SQLiteDatabase and closes it afterwards.
+	 */
 	public long replace(Object item)
 	{
 		SQLiteDatabase database = getWritableDatabase();
