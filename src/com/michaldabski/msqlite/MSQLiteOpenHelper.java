@@ -220,7 +220,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		table.setRowID(item, id);
 		return id;
 	}
-	
+		
 	/**
 	 * Insert single row to database.
 	 * If one of the fields is a Private Key, id will be assigned to it.
@@ -245,6 +245,57 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		SQLiteDatabase database = getWritableDatabase();
 		insert(database, classOfItem, items);
 		database.close();
+	}
+	
+	private static long replace(SQLiteDatabase database, Table table, Object item)
+	{
+		long id = database.replace(table.getName(), null, table.getContentValues(item));
+		table.setRowID(item, id);
+		return id;
+	}
+	
+	/**
+	 * Replace item into database.
+	 * If row already exists, it will be replaced. Otherwise new row is inserted,
+	 * @return id of the replaced row
+	 */
+	public static long replace(SQLiteDatabase database, Object item)
+	{
+		return replace(database, new Table(item.getClass()), item);
+	}
+	
+	/**
+	 * Replace items into database.
+	 * If row already exists, it will be replaced. Otherwise new row is inserted,
+	 */
+	public static <T> void replace(SQLiteDatabase database, Class<T> type, Collection<T> items)
+	{
+		Table table = new Table(type);
+		for (T item : items)
+			replace(database, table, item);
+	}
+	
+	/**
+	 * Convenience method for static method replace()
+	 * gets an instance of writable SQLiteDatabase and closes it afterwards.
+	 */
+	public <T> void replace(Class<T> type, Collection<T> items)
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		replace(database, type, items);
+		database.close();
+	}
+	
+	/**
+	 * Convenience method for static method replace()
+	 * gets an instance of writable SQLiteDatabase and closes it afterwards.
+	 */
+	public long replace(Object item)
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		long id = replace(database, item);
+		database.close();
+		return id;
 	}
 	
 	/**
