@@ -266,6 +266,21 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 			replace(database, table, item);
 	}
 	
+	public <T> void replace(Class<T> type, Collection<T> items)
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		replace(database, type, items);
+		database.close();
+	}
+	
+	public long replace(Object item)
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		long id = replace(database, item);
+		database.close();
+		return id;
+	}
+	
 	/**
 	 * Runs a create table query on the database.
 	 * This method creates new instance of SQLiteDatabase
