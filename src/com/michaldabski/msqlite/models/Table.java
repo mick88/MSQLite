@@ -80,7 +80,7 @@ public class Table
 	public void setRowID(Object object, long id)
 	{
 		Column primaryKey = getIntegerPrimaryKey();
-		if (primaryKey != null)
+		if (primaryKey != null && id != -1)
 			primaryKey.setValue(object, id);
 	}
 	
