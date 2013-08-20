@@ -58,6 +58,47 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		database.delete(new Table(type).getName(), whereClause, whereArgs);
 	}
 	
+	private static int delete(SQLiteDatabase database, Table table, String whereClause, String [] whereArgs)
+	{
+		return database.delete(table.getName(), whereClause, whereArgs);
+	}
+	
+	private static int delete(SQLiteDatabase database, Table table, Object item)
+	{
+		final String whereClause;
+		final String [] whereArgs;
+		
+		if (table.getPrimaryKeys().isEmpty())
+		{
+			whereClause = table.getFullWhereClause();
+			whereArgs = table.getFullWhereArgs(item);
+		}
+		else
+		{
+			whereClause = table.getPrimaryWhereClause();
+			whereArgs = table.getPrimaryWhereArgs(item);
+		}
+		
+		return delete(database, table, whereClause, whereArgs);
+	} 
+	
+	public static int delete(SQLiteDatabase database, Object item)
+	{
+		Table table = new Table(item.getClass());
+		return delete(database, table, item);
+	}
+	
+	public static <T> int delete(SQLiteDatabase database, Class<T> type, Collection<T> items)
+	{
+		Table table = new Table(type);
+		int n=0;
+		for (T item : items)
+			n += delete(database, table, item);
+		
+		return n;
+			
+	}
+	
 	/**
 	 * Query database for a number of rows
 	 * @param database SQLiteDatabase to use
