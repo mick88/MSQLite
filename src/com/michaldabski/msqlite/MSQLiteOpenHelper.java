@@ -221,6 +221,27 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		return id;
 	}
 	
+	private static long replace(SQLiteDatabase database, Table table, Object item)
+	{
+		long id = database.replace(table.getName(), null, table.getContentValues(item));
+		table.setRowID(item, id);
+		return id;
+	}
+	
+	public static long replace(SQLiteDatabase database, Object item)
+	{
+		return replace(database, new Table(item.getClass()), item);
+	}
+	
+	public static <T> void replace(SQLiteDatabase database, Class<T> type, Collection<T> items)
+	{
+		Table table = new Table(type);
+		for (T item : items)
+			replace(database, table, item);
+	}
+	
+	
+	
 	/**
 	 * Insert single row to database.
 	 * If one of the fields is a Private Key, id will be assigned to it.
