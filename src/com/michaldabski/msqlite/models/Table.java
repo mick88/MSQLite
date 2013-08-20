@@ -170,11 +170,11 @@ public class Table
 		return values;
 	}
 	
-	public String getPrimaryWhereClause()
+	private String getWhereClause(List<Column> columns)
 	{
 		StringBuilder builder = new StringBuilder();
 		String glue = "";
-		for (Column col : primaryKeys)
+		for (Column col : columns)
 		{
 			builder.append(glue)
 			.append('`').append(col.name).append('`')
@@ -185,50 +185,9 @@ public class Table
 		return builder.toString();
 	}
 	
-	public String getFullWhereClause()
+	private String [] getWhereArgs(List<Column> columns, Object object)
 	{
-		StringBuilder builder = new StringBuilder();
-		String glue = "";
-		for (Column col : this.columns)
-		{
-			builder.append(glue)
-			.append('`').append(col.name).append('`')
-			.append('=')
-			.append('?');
-		}
-		
-		return builder.toString();
-	}
-	
-	public String [] getPrimaryWhereArgs(Object object)
-	{
-		String [] result = new String[primaryKeys.size()];
-
-		for (int i=0; i < result.length; i++)
-		{
-			try
-			{
-				Object value = primaryKeys.get(i).getValue(object);
-				
-				if (value == null) result[i] = null;
-				else result[i] = value.toString();
-			} catch (IllegalArgumentException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchFieldException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		return result;
-	}
-	
-	public String [] getFullWhereArgs(Object object)
-	{
-		String [] result = new String[this.columns.size()];
+		String [] result = new String[columns.size()];
 
 		for (int i=0; i < result.length; i++)
 		{
@@ -250,6 +209,26 @@ public class Table
 		}
 		
 		return result;
+	}
+	
+	public String getPrimaryWhereClause()
+	{
+		return getWhereClause(primaryKeys);
+	}
+	
+	public String getFullWhereClause()
+	{
+		return getWhereClause(columns);
+	}
+	
+	public String [] getPrimaryWhereArgs(Object object)
+	{
+		return getWhereArgs(primaryKeys, object);
+	}
+	
+	public String [] getFullWhereArgs(Object object)
+	{
+		return getWhereArgs(columns, object);
 	}
 	
 	/**
