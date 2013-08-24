@@ -4,15 +4,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-
-import com.michaldabski.msqlite.DataTypes;
-import com.michaldabski.msqlite.Annotations.TableName;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+
+import com.michaldabski.msqlite.Annotations.TableName;
+import com.michaldabski.msqlite.DataTypes;
 
 /**
  * Represents a table in SQLite database. 
