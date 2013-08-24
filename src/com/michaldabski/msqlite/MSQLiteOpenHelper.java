@@ -50,9 +50,9 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		database.execSQL(new Drop(type).build());
 	}
 	
-	public static void dropTable(SQLiteDatabase database, Class<?> type, boolean ifNotExists)
+	public static void dropTable(SQLiteDatabase database, Class<?> type, boolean ifExists)
 	{
-		database.execSQL(new Drop(type).setIfExists(ifNotExists).build());
+		database.execSQL(new Drop(type).setIfExists(ifExists).build());
 	}
 	
 	/**
