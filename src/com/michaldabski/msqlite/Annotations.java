@@ -31,4 +31,26 @@ public class Annotations
 	public static @interface DataType{
 		String value();
 	}
+	
+	/**
+	 * Name of this class in database.
+	 * By default class name is used.
+	 * @author Michal
+	 *
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	public static @interface TableName{
+		String value();
+	}
+	
+	/**
+	 * Name of database column corresponding to this field.
+	 * By default, field name is used.
+	 * @author Michal
+	 *
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	public static @interface ColumnName{
+		String value();
+	}
 }
