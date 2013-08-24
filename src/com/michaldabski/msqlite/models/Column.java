@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import android.util.Log;
 
+import com.michaldabski.msqlite.Annotations.ColumnName;
 import com.michaldabski.msqlite.Annotations.DataType;
 import com.michaldabski.msqlite.DataTypes;
 
@@ -33,7 +34,10 @@ public class Column
 	public Column(Field field)
 	{
 		this.field =field;
-		this.name = field.getName();
+		
+		if (field.isAnnotationPresent(ColumnName.class)) this.name = field.getAnnotation(ColumnName.class).value();
+		else this.name = field.getName();
+		
 		this.fieldClass = field.getType();
 		
 		this.uniqueName = String.format("%s.%s", field.getDeclaringClass().getSimpleName(), name);
