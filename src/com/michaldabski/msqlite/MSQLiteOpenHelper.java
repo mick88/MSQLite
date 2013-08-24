@@ -95,9 +95,27 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		for (T item : items)
 			n += delete(database, table, item);
 		
-		return n;
-			
+		return n;			
 	}
+	
+	public <T> int delete(Class<T> type, Collection<T> items)
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		int result = delete(database, type, items);
+		database.close();
+		
+		return result;
+	}
+	
+	public int delete(Object item)
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		int result = delete(database, item);
+		database.close();
+		
+		return result;
+	}
+	
 	
 	/**
 	 * Query database for a number of rows
