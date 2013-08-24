@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.michaldabski.msqlite.DataTypes;
+import com.michaldabski.msqlite.Annotations.TableName;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -44,7 +45,10 @@ public class Table
 	 */
 	public Table(Class<?> type)
 	{
-		this.name = type.getSimpleName();
+		if (type.isAnnotationPresent(TableName.class)) 
+			this.name = type.getAnnotation(TableName.class).value();
+		else 
+			this.name = type.getSimpleName();
 		
 		Field [] fields = type.getDeclaredFields();
 		this.columns = new ArrayList<Column>(fields.length);
