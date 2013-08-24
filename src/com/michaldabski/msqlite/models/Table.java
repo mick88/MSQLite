@@ -180,6 +180,8 @@ public class Table
 			.append('`').append(col.name).append('`')
 			.append('=')
 			.append('?');
+			
+			glue = " AND ";
 		}
 		
 		return builder.toString();
