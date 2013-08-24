@@ -187,6 +187,7 @@ public class Table
 		return builder.toString();
 	}
 	
+
 	private String [] getWhereArgs(List<Column> columns, Object object)
 	{
 		String [] result = new String[columns.size()];
