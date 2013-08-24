@@ -2,6 +2,7 @@ package com.michaldabski.msqlite.queries;
 
 public class Drop extends QueryBuilder
 {
+	private boolean ifExists = false;
 	
 	public Drop(Class<?> type)
 	{
@@ -12,7 +13,19 @@ public class Drop extends QueryBuilder
 	@Override
 	public String build()
 	{
-		return String.format("DROP TABLE `%s`;", getTable().getName());
+		StringBuilder builder = new StringBuilder("DROP TABLE ");
+		if (ifExists) builder.append("IF EXISTS ");
+		builder.append('`')
+			.append(getTable().getName())
+			.append('`')
+			.append(';');
+		return builder.toString();
+	}
+	
+	public Drop setIfExists(boolean ifNotExists)
+	{
+		this.ifExists = ifNotExists;
+		return this;
 	}
 	
 }
