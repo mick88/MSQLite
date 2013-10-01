@@ -30,7 +30,8 @@ public class SerializationUtils
 		finally
 		{
 			byteOutStream.close();
-			objectOut.close();
+			if (objectOut != null)
+				objectOut.close();
 		}
 		
 	}
@@ -48,7 +49,8 @@ public class SerializationUtils
 		finally 
 		{
 			inStream.close();
-			objectIn.close();
+			if (objectIn != null)
+				objectIn.close();
 		}
 	}	
 }
