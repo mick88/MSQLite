@@ -11,6 +11,7 @@ import android.database.Cursor;
 
 import com.michaldabski.msqlite.Annotations.TableName;
 import com.michaldabski.msqlite.DataTypes;
+import com.michaldabski.msqlite.SerializationUtils;
 
 /**
  * Represents a table in SQLite database. 
@@ -161,8 +162,12 @@ public class Table
 			try
 			{
 				value = column.getValue(object);
-				if (value == null) values.putNull(column.name);
-				else values.put(column.name, value.toString());
+				if (value == null) 
+					values.putNull(column.name);
+				else if (column.getFieldType() == DataTypes.TYPE_SERIALIZABLE)
+					values.put(column.name, SerializationUtils.serialize(value));
+				else 
+					values.put(column.name, value.toString());
 			} catch (Exception e)
 			{
 				e.printStackTrace();
@@ -260,7 +265,19 @@ public class Table
 		for (Column column : columns)
 		{
 			if ((columnId = cursor.getColumnIndex(column.name)) == -1) continue;
-			column.setStringValue(result, cursor.getString(columnId));
+			if (column.getFieldType() == DataTypes.TYPE_SERIALIZABLE)
+			{
+				try
+				{
+					column.setValue(result, SerializationUtils.deserialize(cursor.getBlob(columnId)));
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+					throw new InstantiationException(e.getMessage());
+				}
+			}
+			else
+				column.setStringValue(result, cursor.getString(columnId));
 		}
 		
 		return result;
