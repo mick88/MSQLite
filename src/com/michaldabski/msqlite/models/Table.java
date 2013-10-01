@@ -260,7 +260,7 @@ public class Table
 		for (Column column : columns)
 		{
 			if ((columnId = cursor.getColumnIndex(column.name)) == -1) continue;
-			column.setStringValue(result, cursor.getString(columnId));
+			column.setValueFromString(result, cursor.getString(columnId));
 		}
 		
 		return result;
