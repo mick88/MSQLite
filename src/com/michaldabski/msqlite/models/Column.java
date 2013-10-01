@@ -131,6 +131,7 @@ public class Column
 					field.set(object, value);
 					break;
 				case DataTypes.TYPE_BYTE:
+					field.set(object, value.byteValue());
 					break;
 			}
 		} catch (IllegalAccessException e)
