@@ -54,7 +54,7 @@ public class DataTypes
 				return DataTypes.DATA_TYPE_FLOAT;
 				
 			default:
-				return DataTypes.DATA_TYPE_NONE;
+				return DataTypes.DATA_TYPE_BLOB;
 		}
 	}
 	
@@ -78,6 +78,6 @@ public class DataTypes
 			return TYPE_SHORT;
 //		else if (cls.isAssignableFrom(Collection.class))
 //			return TYPE_COLLECTION;
-		else return TYPE_OTHER;
+		else return TYPE_SERIALIZABLE;
 	}
 }
