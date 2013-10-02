@@ -147,6 +147,7 @@ public class Column
 					field.set(object, value);
 					break;
 				case DataTypes.TYPE_BYTE:
+					field.set(object, value.byteValue());
 					break;
 			}
 		} catch (IllegalAccessException e)
@@ -162,7 +163,7 @@ public class Column
 		return fieldType;
 	}
 	
-	public void setStringValue(Object object, String value) throws IllegalArgumentException
+	public void setValueFromString(Object object, String value) throws IllegalArgumentException
 	{
 		try
 		{
@@ -206,7 +207,7 @@ public class Column
 		catch (IllegalAccessException e)
 		{
 			field.setAccessible(true);
-			setStringValue(object, value);
+			setValueFromString(object, value);
 			field.setAccessible(false);
 		}
 	}
