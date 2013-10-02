@@ -268,7 +268,7 @@ public class Table
 				} catch (Exception e)
 				{
 					e.printStackTrace();
-					throw new InstantiationException(e.getMessage());
+					throw new RuntimeException(e);
 				}
 			}
 			else
