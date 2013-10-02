@@ -54,7 +54,7 @@ public class Column
 		}
 		else if (fieldType == DataTypes.TYPE_SERIALIZABLE)
 		{
-			if (field.getClass().isInstance(Serializable.class) == false)
+			if (Serializable.class.isAssignableFrom(field.getType()) == false)
 			{
 				NotSerializableException e = new NotSerializableException(field.getType().getSimpleName()+" does not implement Serializable.")
 				{
