@@ -260,7 +260,9 @@ public class Table
 		for (Column column : columns)
 		{
 			if ((columnId = cursor.getColumnIndex(column.name)) == -1) continue;
-			if (column.getFieldType() == DataTypes.TYPE_SERIALIZABLE)
+			if (cursor.isNull(columnId))
+				column.setValue(result, (Object)null);
+			else if (column.getFieldType() == DataTypes.TYPE_SERIALIZABLE)
 			{
 				try
 				{
