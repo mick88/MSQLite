@@ -128,22 +128,7 @@ public class Table
 	
 	public ContentValues getContentValues(Object object)
 	{
-		ContentValues values = new ContentValues(columns.size());
-		for (Column column : columns)
-		{
-			Object value;
-			try
-			{
-				value = column.getValue(object);
-				if (value == null) values.putNull(column.name);
-				else values.put(column.name, value.toString());
-			} catch (Exception e)
-			{
-				e.printStackTrace();
-				values.putNull(column.name);
-			}			
-		}
-		return values;
+		return getContentValues(object, null);
 	}
 	
 	/**
@@ -155,7 +140,7 @@ public class Table
 	{
 		ContentValues values = new ContentValues(columns.size());
 		for (Column column : columns)
-			if (colNames.contains(column.name))
+			if (colNames == null || colNames.contains(column.name))
 		{
 			Object value;
 			try
