@@ -129,7 +129,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 * @return List of objects selected from database
 	 * @throws InstantiationException Exception thrown if selected type could not be instantiated.
 	 */
-	public static <T> List<T> select(SQLiteDatabase database, Class<T> type, String selection, String [] selectionArgs, String orderBy, String limit) throws InstantiationException
+	public static <T> List<T> select(SQLiteDatabase database, Class<T> type, String selection, String [] selectionArgs, String orderBy, String limit)
 	{
 		List<T> result = new ArrayList<T>();
 		Table table = new Table(type);
@@ -252,7 +252,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 * Selects multiple rows from an array. 
 	 * This method gets its own instance of Database
 	 */
-	public <T> List<T> select(Class<T> type, String selection, String [] selectionArgs, String orderBy, String limit) throws InstantiationException
+	public <T> List<T> select(Class<T> type, String selection, String [] selectionArgs, String orderBy, String limit)
 	{
 		SQLiteDatabase database = getReadableDatabase();
 		List<T> result = select(database, type, selection, selectionArgs, orderBy, limit);
@@ -263,7 +263,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	/**
 	 * Selected all rows from given table
 	 */
-	public <T> List<T> selectAll(Class<T> type) throws InstantiationException
+	public <T> List<T> selectAll(Class<T> type)
 	{
 		return select(type, null, null, null, null);
 	}

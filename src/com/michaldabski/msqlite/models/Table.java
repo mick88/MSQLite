@@ -228,7 +228,7 @@ public class Table
 	 * @return Instance of type
 	 * @throws InstantiationException exception thrown when type doesnt instantiate successfully (No empty constructor?)
 	 */
-	public <T> T getRow(Cursor cursor, Class<T> type) throws InstantiationException
+	public <T> T getRow(Cursor cursor, Class<T> type)
 	{
 		T result = null;
 		try
@@ -239,6 +239,9 @@ public class Table
 		{
 			e.printStackTrace();
 			return null;
+		} catch (InstantiationException e)
+		{
+			throw new RuntimeException(e);
 		}
 		
 		int columnId = -1;
