@@ -3,6 +3,7 @@ package com.michaldabski.msqlite;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
@@ -16,7 +17,7 @@ public class SerializationUtils
 		
 	}
 	
-	public static byte[] serialize(Object object) throws IOException
+	public static byte[] serialize(Object object) throws IOException, NotSerializableException
 	{
 		ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
 		ObjectOutput objectOut = null;

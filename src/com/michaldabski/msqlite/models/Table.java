@@ -1,5 +1,7 @@
 package com.michaldabski.msqlite.models;
 
+import java.io.IOException;
+import java.io.NotSerializableException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -136,6 +138,8 @@ public class Table
 	 * Get content values only for selected columns
 	 * @param object Object from which values are used
 	 * @param colNames Subset of object's field names to use
+	 * @throws IOException 
+	 * @throws NotSerializableException 
 	 */
 	public ContentValues getContentValues(Object object, Collection<String> colNames)
 	{
@@ -153,10 +157,13 @@ public class Table
 					values.put(column.name, SerializationUtils.serialize(value));
 				else 
 					values.put(column.name, value.toString());
-			} catch (Exception e)
+			} catch (NoSuchFieldException e)
 			{
 				e.printStackTrace();
 				values.putNull(column.name);
+			} catch (IOException e)
+			{
+				throw new RuntimeException(e);
 			}			
 		}
 		return values;
