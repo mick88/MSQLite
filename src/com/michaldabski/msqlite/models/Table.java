@@ -267,8 +267,7 @@ public class Table
 					column.setValue(result, SerializationUtils.deserialize(cursor.getBlob(columnId)));
 				} catch (Exception e)
 				{
-					e.printStackTrace();
-					throw new InstantiationException(e.getMessage());
+					throw new RuntimeException(e);
 				}
 			}
 			else
