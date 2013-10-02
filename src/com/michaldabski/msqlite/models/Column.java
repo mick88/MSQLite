@@ -1,6 +1,9 @@
 package com.michaldabski.msqlite.models;
 
+import java.io.NotSerializableException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Locale;
 
 import android.util.Log;
 
@@ -49,6 +52,25 @@ public class Column
 			dataType = null;
 			return;
 		}
+		else if (fieldType == DataTypes.TYPE_SERIALIZABLE)
+		{
+			if (field.getClass().isInstance(Serializable.class) == false)
+			{
+				NotSerializableException e = new NotSerializableException(field.getType().getSimpleName()+" does not implement Serializable.")
+				{
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public String getMessage() 
+					{
+						return String.format(Locale.ENGLISH, "Cannot convert %s into database table definition, because its field '%s' does not implement Serializable Interface. You should implement Serializable or make the field transient.",  
+								Column.this.field.getDeclaringClass().getSimpleName(),
+								Column.this.field.getName());
+					}
+				};
+				throw new RuntimeException(e);
+			}
+		}	
 		
 		if (field.isAnnotationPresent(DataType.class))
 			this.dataType = field.getAnnotation(DataType.class).value();
