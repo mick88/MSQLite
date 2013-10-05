@@ -2,6 +2,7 @@ package com.michaldabski.msqlite;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import android.annotation.TargetApi;
@@ -20,7 +21,12 @@ import com.michaldabski.msqlite.queries.Drop;
 
 public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 {
-
+	/**
+	 * collection of classes that will be automatically converted to database tables in on create
+	 * and re-created in onUpdate 
+	 */
+	private final Collection<Class<?>> classes  = new HashSet<Class<?>>();
+	
 	// Constructors
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public MSQLiteOpenHelper(Context context, String name, CursorFactory factory,
@@ -38,6 +44,34 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	{
 		database
 			.execSQL(new CreateTable(type).setIF_NOT_EXIST(ifNotExist).build());
+	}
+	
+	/**
+	 * Add classes to the collection of tracked classes.
+	 * You should call this before onCreate to ensure that all tables are automatically created for your classes.
+	 */
+	public void trackClasses(Collection<Class<?>> classes)
+	{
+		this.classes.addAll(classes);
+	}
+	
+	/**
+	 * Add single class to be automatically added to database in onCreate.
+	 * @param trackedClass
+	 */
+	public void trackClass(Class<?> trackedClass)
+	{
+		this.classes.add(trackedClass);
+	}
+	
+	/**
+	 * Add classes to the collection of tracked classes.
+	 * You should call this before onCreate to ensure that all tables are automatically created for your classes.
+	 */
+	public void trackClasses(Class<?>[] classes)
+	{
+		for (Class<?> c : classes)
+			trackClass(c);
 	}
 	
 	/**
