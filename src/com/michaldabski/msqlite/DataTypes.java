@@ -13,6 +13,7 @@ public class DataTypes
 		TYPE_SHORT = 203,
 		TYPE_BYTE = 204,
 		TYPE_CHAR = 205,
+		TYPE_BOOL = 206,
 		TYPE_FLOAT = 306,
 		TYPE_DOUBLE = 307;
 
@@ -25,6 +26,7 @@ public class DataTypes
 		DATA_TYPE_VARCHAR = DATA_TYPE_TEXT,	
 		DATA_TYPE_DOUBLE = DATA_TYPE_REAL,
 		DATA_TYPE_FLOAT = DATA_TYPE_REAL,
+		DATA_TYPE_BOOLEAN = DATA_TYPE_NUMERIC,
 		DATA_TYPE_NONE = "NONE";
 	
 	/**
@@ -44,8 +46,10 @@ public class DataTypes
 			case TYPE_SHORT:
 			case TYPE_BYTE:
 			case TYPE_CHAR:
-	//		case TYPE_COLLECTION: -- not supported yet
 				return DataTypes.DATA_TYPE_INTEGER;
+				
+			case TYPE_BOOL:
+				return DataTypes.DATA_TYPE_NUMERIC;
 				
 			case TYPE_FLOAT:
 			case TYPE_DOUBLE:
@@ -74,6 +78,8 @@ public class DataTypes
 			return TYPE_BYTE;
 		else if (cls.isAssignableFrom(Short.class) || cls.isAssignableFrom(short.class))
 			return TYPE_SHORT;
+		else if (cls.isAssignableFrom(Boolean.class) || cls.isAssignableFrom(boolean.class))
+			return TYPE_BOOL;
 //		else if (cls.isAssignableFrom(Collection.class))
 //			return TYPE_COLLECTION;
 		else return TYPE_OTHER;

@@ -108,7 +108,10 @@ public class Column
 //		return fieldClass.cast(object.getClass().getField(fieldName).get(object))
 		try
 		{
-			return field.get(object);
+			Object value = field.get(object);
+			if (value instanceof Boolean)
+				return (((Boolean)value == true) ? 1 : 0);
+			return value;
 		} catch (IllegalAccessException e)
 		{
 			field.setAccessible(true);
@@ -180,6 +183,11 @@ public class Column
 					
 				case DataTypes.TYPE_SHORT:
 					field.set(object, Short.valueOf(value));
+					break;
+					
+				case DataTypes.TYPE_BOOL:
+					int i = Integer.valueOf(value);
+					field.set(object, i != 0);
 					break;
 			}				
 		} 
