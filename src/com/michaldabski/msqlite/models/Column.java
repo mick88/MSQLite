@@ -1,6 +1,9 @@
 package com.michaldabski.msqlite.models;
 
+import java.io.NotSerializableException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Locale;
 
 import android.util.Log;
 
@@ -121,6 +124,22 @@ public class Column
 		}
 	}
 	
+	/**
+	 * Sets raw value without interpreting or converting
+	 */
+	public void setValue(Object object, Object value)
+	{
+		try
+		{
+			field.set(object, value);
+		} catch (IllegalAccessException e)
+		{
+			field.setAccessible(true);
+			setValue(object, value);
+			field.setAccessible(false);
+		}
+	}
+	
 	public void setValue(Object object, Long value) throws IllegalArgumentException
 	{
 		try
@@ -143,6 +162,11 @@ public class Column
 			setValue(object, value);
 			field.setAccessible(false);
 		}
+	}
+	
+	public int getFieldType()
+	{
+		return fieldType;
 	}
 	
 	public void setValueFromString(Object object, String value) throws IllegalArgumentException

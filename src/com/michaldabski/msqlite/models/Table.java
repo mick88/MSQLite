@@ -1,5 +1,7 @@
 package com.michaldabski.msqlite.models;
 
+import java.io.IOException;
+import java.io.NotSerializableException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import android.database.Cursor;
 
 import com.michaldabski.msqlite.Annotations.TableName;
 import com.michaldabski.msqlite.DataTypes;
+import com.michaldabski.msqlite.SerializationUtils;
 
 /**
  * Represents a table in SQLite database. 
@@ -135,6 +138,8 @@ public class Table
 	 * Get content values only for selected columns
 	 * @param object Object from which values are used
 	 * @param colNames Subset of object's field names to use
+	 * @throws IOException 
+	 * @throws NotSerializableException 
 	 */
 	public ContentValues getContentValues(Object object, Collection<String> colNames)
 	{
@@ -146,12 +151,19 @@ public class Table
 			try
 			{
 				value = column.getValue(object);
-				if (value == null) values.putNull(column.name);
-				else values.put(column.name, value.toString());
-			} catch (Exception e)
+				if (value == null) 
+					values.putNull(column.name);
+				else if (column.getFieldType() == DataTypes.TYPE_SERIALIZABLE)
+					values.put(column.name, SerializationUtils.serialize(value));
+				else 
+					values.put(column.name, value.toString());
+			} catch (NoSuchFieldException e)
 			{
 				e.printStackTrace();
 				values.putNull(column.name);
+			} catch (IOException e)
+			{
+				throw new RuntimeException(e);
 			}			
 		}
 		return values;
@@ -248,7 +260,20 @@ public class Table
 		for (Column column : columns)
 		{
 			if ((columnId = cursor.getColumnIndex(column.name)) == -1) continue;
-			column.setValueFromString(result, cursor.getString(columnId));
+			if (cursor.isNull(columnId))
+				column.setValue(result, (Object)null);
+			else if (column.getFieldType() == DataTypes.TYPE_SERIALIZABLE)
+			{
+				try
+				{
+					column.setValue(result, SerializationUtils.deserialize(cursor.getBlob(columnId)));
+				} catch (Exception e)
+				{
+					throw new RuntimeException(e);
+				}
+			}
+			else
+				column.setValueFromString(result, cursor.getString(columnId));
 		}
 		
 		return result;

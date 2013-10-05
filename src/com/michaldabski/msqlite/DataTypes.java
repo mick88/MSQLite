@@ -8,6 +8,7 @@ public class DataTypes
 		TYPE_OTHER = 100,
 		TYPE_STRING = 101,
 		TYPE_COLLECTION = 102,
+		TYPE_SERIALIZABLE = 103,
 		TYPE_INT = 201,
 		TYPE_LONG = 202,
 		TYPE_SHORT = 203,
@@ -27,7 +28,8 @@ public class DataTypes
 		DATA_TYPE_DOUBLE = DATA_TYPE_REAL,
 		DATA_TYPE_FLOAT = DATA_TYPE_REAL,
 		DATA_TYPE_BOOLEAN = DATA_TYPE_NUMERIC,
-		DATA_TYPE_NONE = "NONE";
+		DATA_TYPE_NONE = "NONE",
+		DATA_TYPE_BLOB = DATA_TYPE_NONE;
 	
 	/**
 	 * Gets database data type
@@ -56,7 +58,7 @@ public class DataTypes
 				return DataTypes.DATA_TYPE_FLOAT;
 				
 			default:
-				return DataTypes.DATA_TYPE_NONE;
+				return DataTypes.DATA_TYPE_BLOB;
 		}
 	}
 	
@@ -82,6 +84,6 @@ public class DataTypes
 			return TYPE_BOOL;
 //		else if (cls.isAssignableFrom(Collection.class))
 //			return TYPE_COLLECTION;
-		else return TYPE_OTHER;
+		else return TYPE_SERIALIZABLE;
 	}
 }
