@@ -74,6 +74,35 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 			trackClass(c);
 	}
 	
+	@Override
+	public void onCreate(SQLiteDatabase db)
+	{
+		for (Class<?> c : classes)
+			createTable(db, c, true);		
+	}
+	
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+	{
+		for (Class<?> c : classes)
+		{
+			dropTable(db, c, true);
+			createTable(db, c, false);
+		}
+		// TODO detect differences between tables and modify table instead of re-creating
+	}
+	
+	@Override
+	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion)
+	{
+		for (Class<?> c : classes)
+		{
+			dropTable(db, c, true);
+			createTable(db, c, false);
+		}
+		// TODO detect differences between tables and modify table instead of re-creating
+	}
+	
 	/**
 	 * Drops table in the database
 	 * @param database SQLite database
