@@ -2,8 +2,10 @@ package com.michaldabski.msqlite;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import android.annotation.TargetApi;
 import android.content.ContentValues;
@@ -14,6 +16,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.michaldabski.msqlite.models.Table;
 import com.michaldabski.msqlite.queries.CreateTable;
@@ -44,6 +48,43 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	{
 		database
 			.execSQL(new CreateTable(type).setIF_NOT_EXIST(ifNotExist).build());
+	}
+	
+	private static Map<String, String> getCreateTableStatements(SQLiteDatabase database)
+	{
+		final int COLUMN_NAME = 0,
+				COLUMN_SQL = 1;
+		Cursor c = database.rawQuery("SELECT name, sql FROM SQLITE_MASTER WHERE type=?", new String [] {"table"});
+		Map<String,String> result = new HashMap<String, String>(c.getCount());
+		while (c.moveToNext())
+		{
+			result.put(c.getString(COLUMN_NAME), c.getString(COLUMN_SQL));
+		}
+		c.close();
+		return result;
+	}
+	
+	private static void upgradeTable(SQLiteDatabase database, Table table)
+	{
+		Cursor cur = database.rawQuery("PRAGMA table_info("+table.getName()+");", null);
+		// TODO: Compare columns
+		// [cid, name, type, notnull, dflt_value, pk]
+		Log.i(table.getName(), "table upgraded");
+	}
+	
+	public void upgradeDatabase()
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		upgradeDatabase(database);
+		database.close();
+	}
+	
+	public void upgradeDatabase(SQLiteDatabase database)
+	{
+		for (Class<?> c : this.classes)
+		{
+			upgradeTable(database, new Table(c));
+		}
 	}
 	
 	/**
