@@ -24,7 +24,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 {
 	/**
 	 * collection of classes that will be automatically converted to database tables in on create
-	 * and re-created in onUpdate 
+	 * and upgraded in opUpgrade
 	 */
 	private final Collection<Class<?>> classes  = new HashSet<Class<?>>();
 	
