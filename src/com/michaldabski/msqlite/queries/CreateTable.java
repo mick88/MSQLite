@@ -11,10 +11,15 @@ public class CreateTable extends QueryBuilder
 {
 	private boolean 
 		IF_NOT_EXISTS = false;
-	
+
 	public CreateTable(Class<?> type)
 	{
 		super(type);
+	}
+	
+	public CreateTable(Table table)
+	{
+		super(table);
 	}
 
 	public CreateTable setIF_NOT_EXIST(boolean iF_NOT_EXIST)

@@ -5,17 +5,23 @@ import com.michaldabski.msqlite.models.Table;
 
 public abstract class QueryBuilder
 {
-	protected Class<?> type;
+	protected Table table;
 	protected String condition = "1";	
 	
+	@Deprecated
 	public QueryBuilder(Class<?> type)
 	{
-		this.type = type;
+		this.table = new Table(type);
+	}
+	
+	public QueryBuilder(Table table)
+	{
+		this.table = table;
 	}
 	
 	public Table getTable()
 	{
-		return new Table(type);
+		return table;
 	}
 	
 //	public abstract <T> Result<T> execute(Class<T> type);

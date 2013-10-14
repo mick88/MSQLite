@@ -5,6 +5,7 @@ public class DataTypes
 {	
 	// Class field types
 	public final static int
+		TYPE_NA = -1,
 		TYPE_OTHER = 100,
 		TYPE_STRING = 101,
 		TYPE_COLLECTION = 102,

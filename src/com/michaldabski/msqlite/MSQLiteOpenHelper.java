@@ -2,10 +2,8 @@ package com.michaldabski.msqlite;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import android.annotation.TargetApi;
 import android.content.ContentValues;
@@ -16,7 +14,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.michaldabski.msqlite.models.Table;
@@ -46,30 +43,32 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	// Static methods
 	public static void createTable(SQLiteDatabase database, Class<?> type, boolean ifNotExist)
 	{
-		database
-			.execSQL(new CreateTable(type).setIF_NOT_EXIST(ifNotExist).build());
+		createTable(database, new Table(type), ifNotExist);
 	}
 	
-	private static Map<String, String> getCreateTableStatements(SQLiteDatabase database)
+	public static void createTable(SQLiteDatabase database, Table table, boolean ifNotExist)
 	{
-		final int COLUMN_NAME = 0,
-				COLUMN_SQL = 1;
-		Cursor c = database.rawQuery("SELECT name, sql FROM SQLITE_MASTER WHERE type=?", new String [] {"table"});
-		Map<String,String> result = new HashMap<String, String>(c.getCount());
-		while (c.moveToNext())
-		{
-			result.put(c.getString(COLUMN_NAME), c.getString(COLUMN_SQL));
-		}
-		c.close();
-		return result;
+		database
+			.execSQL(new CreateTable(table).setIF_NOT_EXIST(ifNotExist).build());
 	}
 	
 	private static void upgradeTable(SQLiteDatabase database, Table table)
 	{
-		Cursor cur = database.rawQuery("PRAGMA table_info("+table.getName()+");", null);
-		// TODO: Compare columns
-		// [cid, name, type, notnull, dflt_value, pk]
-		Log.i(table.getName(), "table upgraded");
+		Cursor cursor = database.rawQuery("PRAGMA table_info("+table.getName()+");", null);
+		if (cursor.getCount() == 0)
+		{
+			createTable(database, table, false);
+			Log.i("DatabaseUpgrade", "table created: "+table.getName());
+		}
+		else
+		{
+			Table currentDatabaseTable = Table.fromCursor(table.getName(), cursor);
+			for (String sql : Table.upgradeTable(currentDatabaseTable, table))
+			{
+				database.execSQL(sql);
+				Log.i("DatabaseUpgrade", "table altered. Query: "+sql);
+			}
+		}
 	}
 	
 	public void upgradeDatabase()
@@ -125,23 +124,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
-		for (Class<?> c : classes)
-		{
-			dropTable(db, c, true);
-			createTable(db, c, false);
-		}
-		// TODO detect differences between tables and modify table instead of re-creating
-	}
-	
-	@Override
-	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion)
-	{
-		for (Class<?> c : classes)
-		{
-			dropTable(db, c, true);
-			createTable(db, c, false);
-		}
-		// TODO detect differences between tables and modify table instead of re-creating
+		upgradeDatabase(db);
 	}
 	
 	/**
