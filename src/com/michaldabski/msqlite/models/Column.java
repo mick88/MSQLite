@@ -103,7 +103,9 @@ public class Column
 	@Override
 	public boolean equals(Object obj)
 	{
-		return uniqueName.equals(obj);
+		if (obj instanceof Column)
+			return uniqueName.equals(((Column) obj).uniqueName);
+		else return super.equals(obj);
 	}
 	
 	public Object getValue(Object object) throws IllegalArgumentException, NoSuchFieldException
