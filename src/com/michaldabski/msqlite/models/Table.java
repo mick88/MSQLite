@@ -30,6 +30,59 @@ public class Table
 	protected final List<Column> primaryKeys;
 	
 	/**
+	 * Create table instance from cursor
+	 * @param cursor PRAGMA table_info(TABLE_NAME);
+	 * @return table model based on data from the cursor
+	 */
+	public static Table fromCursor(String tableName, Cursor cursor)
+	{
+		Table result = new Table(tableName, new ArrayList<Column>(cursor.getCount()));
+		while (cursor.moveToNext())
+		{
+			Column column = Column.fromCursor(cursor, result);
+			result.columns.add(column);
+			if (column.isPRIMARY_KEY())
+				result.primaryKeys.add(column);
+		}
+		return result;
+	}
+	
+	/**
+	 *	Create upgrade statements according to sqlite rules:
+	 *	http://www.sqlite.org/lang_altertable.html
+	 * 	only new columns are added.
+	 *	@return alter statements to alter upgradeFrom table into this table
+	 */
+	public List<String> upgradeTable(Table upgradeFrom)
+	{
+		List<String> result = new ArrayList<String>();
+		
+		// add new columns
+		for (Column column : columns)
+		{
+			if (upgradeFrom.columns.contains(column) == false)
+			{
+				StringBuilder resultBuilder = new StringBuilder("Alter table `").append(this.name)
+						.append("` ADD COLUMN ").append(column.getBuilder()).append(';');
+				result.add(resultBuilder.toString());
+			}
+		}
+		return result;
+	}
+	
+	public static List<String> upgradeTable(Table currentTable, Table newTable)
+	{
+		return newTable.upgradeTable(currentTable);
+	}
+	
+	private Table(String name, List<Column> columns)
+	{
+		this.name = name;
+		this.columns = columns;
+		this.primaryKeys = new ArrayList<Column>(1);
+	}
+	
+	/**
 	 * Create Table from java class definition
 	 * 
 	 * All fields that are not static, final or transient, 
@@ -57,7 +110,7 @@ public class Table
 		for (Field field : fields)
 		{
 			if ((field.getModifiers() & (Modifier.TRANSIENT | Modifier.STATIC | Modifier.FINAL)) > 0) continue;
-			Column column = new Column(field);
+			Column column = new Column(field, this);
 			if (column.getDataType() == null) continue;
 			columns.add(column);
 			if (column.PRIMARY_KEY) primaryKeys.add(column);

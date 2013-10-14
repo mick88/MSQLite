@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
+import android.util.Log;
 
 import com.michaldabski.msqlite.models.Table;
 import com.michaldabski.msqlite.queries.CreateTable;
@@ -42,8 +43,47 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	// Static methods
 	public static void createTable(SQLiteDatabase database, Class<?> type, boolean ifNotExist)
 	{
+		createTable(database, new Table(type), ifNotExist);
+	}
+	
+	public static void createTable(SQLiteDatabase database, Table table, boolean ifNotExist)
+	{
 		database
-			.execSQL(new CreateTable(type).setIF_NOT_EXIST(ifNotExist).build());
+			.execSQL(new CreateTable(table).setIF_NOT_EXIST(ifNotExist).build());
+	}
+	
+	private static void upgradeTable(SQLiteDatabase database, Table table)
+	{
+		Cursor cursor = database.rawQuery("PRAGMA table_info("+table.getName()+");", null);
+		if (cursor.getCount() == 0)
+		{
+			createTable(database, table, false);
+			Log.i("DatabaseUpgrade", "table created: "+table.getName());
+		}
+		else
+		{
+			Table currentDatabaseTable = Table.fromCursor(table.getName(), cursor);
+			for (String sql : Table.upgradeTable(currentDatabaseTable, table))
+			{
+				database.execSQL(sql);
+				Log.i("DatabaseUpgrade", "table altered. Query: "+sql);
+			}
+		}
+	}
+	
+	public void upgradeDatabase()
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		upgradeDatabase(database);
+		database.close();
+	}
+	
+	public void upgradeDatabase(SQLiteDatabase database)
+	{
+		for (Class<?> c : this.classes)
+		{
+			upgradeTable(database, new Table(c));
+		}
 	}
 	
 	/**
@@ -84,23 +124,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
-		for (Class<?> c : classes)
-		{
-			dropTable(db, c, true);
-			createTable(db, c, false);
-		}
-		// TODO detect differences between tables and modify table instead of re-creating
-	}
-	
-	@Override
-	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion)
-	{
-		for (Class<?> c : classes)
-		{
-			dropTable(db, c, true);
-			createTable(db, c, false);
-		}
-		// TODO detect differences between tables and modify table instead of re-creating
+		upgradeDatabase(db);
 	}
 	
 	/**
