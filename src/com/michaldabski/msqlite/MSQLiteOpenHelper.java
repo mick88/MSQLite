@@ -13,6 +13,7 @@ import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Address;
 import android.os.Build;
 import android.util.Log;
 
@@ -38,6 +39,20 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	public MSQLiteOpenHelper(Context context, String name, CursorFactory factory,
 			int version) {
 		super(context, name, factory, version);
+	}
+	
+	public MSQLiteOpenHelper(Context context, String name, CursorFactory factory,
+			int version, Collection<Class<?>> trackedClasses)
+	{
+		this(context, name, factory, version);
+		trackClasses(trackedClasses);
+	}
+	
+	public MSQLiteOpenHelper(Context context, String name, CursorFactory factory,
+			int version, Class<?>[] trackedClasses)
+	{
+		this(context, name, factory, version);
+		trackClasses(trackedClasses);
 	}
 
 	// Static methods
