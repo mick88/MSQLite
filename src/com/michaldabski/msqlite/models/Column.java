@@ -1,10 +1,8 @@
 package com.michaldabski.msqlite.models;
 
-import java.io.NotSerializableException;
-import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.Locale;
 
+import android.database.Cursor;
 import android.util.Log;
 
 import com.michaldabski.msqlite.Annotations.ColumnName;
@@ -30,25 +28,48 @@ public class Column
 		dataType,
 		// table.field
 		uniqueName;
-	
-	protected final Class<?> fieldClass;
 	private final int fieldType;
 	
-	public Column(Field field)
+	public static Column fromCursor(Cursor cursor, Table table)
+	{
+		final int FIELD_NAME = 1,
+				FIELD_TYPE = 2,
+				FIELD_NOT_NULL = 3,
+				FIELD_DEF_VALUE = 4,
+				FIELD_PK = 5;
+		String name = cursor.getString(FIELD_NAME);
+		Column column = new Column(null, cursor.getInt(FIELD_NOT_NULL)==1, cursor.getInt(FIELD_PK)==1, name, 
+				cursor.getString(FIELD_TYPE), table.getName()+"."+name, DataTypes.TYPE_NA);
+		
+		return column;
+	}
+	
+	private Column(Field field, boolean nOT_NULL, boolean pRIMARY_KEY,
+			String name, String dataType, String uniqueName,
+			int fieldType)
+	{
+		this.field = field;
+		NOT_NULL = nOT_NULL;
+		PRIMARY_KEY = pRIMARY_KEY;
+		this.name = name;
+		this.dataType = dataType;
+		this.uniqueName = uniqueName;
+		this.fieldType = fieldType;
+	}
+
+	public Column(Field field, Table table)
 	{
 		this.field =field;
 		
 		if (field.isAnnotationPresent(ColumnName.class)) this.name = field.getAnnotation(ColumnName.class).value();
 		else this.name = field.getName();
 		
-		this.fieldClass = field.getType();
+		this.uniqueName = String.format("%s.%s", table.getName(), name);
 		
-		this.uniqueName = String.format("%s.%s", field.getDeclaringClass().getSimpleName(), name);
-		
-		fieldType = DataTypes.getFieldType(fieldClass);
+		fieldType = DataTypes.getFieldType(field.getType());
 		if (fieldType == DataTypes.TYPE_OTHER)
 		{
-			Log.w("MSQLite", fieldClass.getSimpleName()+" is not supported as a table field yet. Consider making this field transient.");
+			Log.w("MSQLite", field.getType().getSimpleName()+" is not supported as a table field yet. Consider making this field transient.");
 			dataType = null;
 			return;
 		}
@@ -103,7 +124,9 @@ public class Column
 	@Override
 	public boolean equals(Object obj)
 	{
-		return uniqueName.equals(obj);
+		if (obj instanceof Column)
+			return uniqueName.equals(((Column) obj).uniqueName);
+		else return super.equals(obj);
 	}
 	
 	public Object getValue(Object object) throws IllegalArgumentException, NoSuchFieldException
@@ -167,6 +190,11 @@ public class Column
 	public int getFieldType()
 	{
 		return fieldType;
+	}
+	
+	public boolean isPRIMARY_KEY()
+	{
+		return PRIMARY_KEY;
 	}
 	
 	public void setValueFromString(Object object, String value) throws IllegalArgumentException

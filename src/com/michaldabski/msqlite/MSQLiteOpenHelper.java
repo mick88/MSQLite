@@ -2,6 +2,7 @@ package com.michaldabski.msqlite;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import android.annotation.TargetApi;
@@ -12,7 +13,9 @@ import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Address;
 import android.os.Build;
+import android.util.Log;
 
 import com.michaldabski.msqlite.models.Table;
 import com.michaldabski.msqlite.queries.CreateTable;
@@ -20,7 +23,12 @@ import com.michaldabski.msqlite.queries.Drop;
 
 public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 {
-
+	/**
+	 * collection of classes that will be automatically converted to database tables in on create
+	 * and upgraded in opUpgrade
+	 */
+	private final Collection<Class<?>> classes  = new HashSet<Class<?>>();
+	
 	// Constructors
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public MSQLiteOpenHelper(Context context, String name, CursorFactory factory,
@@ -32,12 +40,106 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 			int version) {
 		super(context, name, factory, version);
 	}
+	
+	public MSQLiteOpenHelper(Context context, String name, CursorFactory factory,
+			int version, Collection<Class<?>> trackedClasses)
+	{
+		this(context, name, factory, version);
+		trackClasses(trackedClasses);
+	}
+	
+	public MSQLiteOpenHelper(Context context, String name, CursorFactory factory,
+			int version, Class<?>[] trackedClasses)
+	{
+		this(context, name, factory, version);
+		trackClasses(trackedClasses);
+	}
 
 	// Static methods
 	public static void createTable(SQLiteDatabase database, Class<?> type, boolean ifNotExist)
 	{
+		createTable(database, new Table(type), ifNotExist);
+	}
+	
+	public static void createTable(SQLiteDatabase database, Table table, boolean ifNotExist)
+	{
 		database
-			.execSQL(new CreateTable(type).setIF_NOT_EXIST(ifNotExist).build());
+			.execSQL(new CreateTable(table).setIF_NOT_EXIST(ifNotExist).build());
+	}
+	
+	private static void upgradeTable(SQLiteDatabase database, Table table)
+	{
+		Cursor cursor = database.rawQuery("PRAGMA table_info("+table.getName()+");", null);
+		if (cursor.getCount() == 0)
+		{
+			createTable(database, table, false);
+			Log.i("DatabaseUpgrade", "table created: "+table.getName());
+		}
+		else
+		{
+			Table currentDatabaseTable = Table.fromCursor(table.getName(), cursor);
+			for (String sql : Table.upgradeTable(currentDatabaseTable, table))
+			{
+				database.execSQL(sql);
+				Log.i("DatabaseUpgrade", "table altered. Query: "+sql);
+			}
+		}
+	}
+	
+	public void upgradeDatabase()
+	{
+		SQLiteDatabase database = getWritableDatabase();
+		upgradeDatabase(database);
+		database.close();
+	}
+	
+	public void upgradeDatabase(SQLiteDatabase database)
+	{
+		for (Class<?> c : this.classes)
+		{
+			upgradeTable(database, new Table(c));
+		}
+	}
+	
+	/**
+	 * Add classes to the collection of tracked classes.
+	 * You should call this before onCreate to ensure that all tables are automatically created for your classes.
+	 */
+	public void trackClasses(Collection<Class<?>> classes)
+	{
+		this.classes.addAll(classes);
+	}
+	
+	/**
+	 * Add single class to be automatically added to database in onCreate.
+	 * @param trackedClass
+	 */
+	public void trackClass(Class<?> trackedClass)
+	{
+		this.classes.add(trackedClass);
+	}
+	
+	/**
+	 * Add classes to the collection of tracked classes.
+	 * You should call this before onCreate to ensure that all tables are automatically created for your classes.
+	 */
+	public void trackClasses(Class<?>[] classes)
+	{
+		for (Class<?> c : classes)
+			trackClass(c);
+	}
+	
+	@Override
+	public void onCreate(SQLiteDatabase db)
+	{
+		for (Class<?> c : classes)
+			createTable(db, c, true);		
+	}
+	
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+	{
+		upgradeDatabase(db);
 	}
 	
 	/**
