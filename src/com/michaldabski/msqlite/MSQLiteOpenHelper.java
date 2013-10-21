@@ -22,6 +22,10 @@ import com.michaldabski.msqlite.queries.Drop;
 
 public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 {
+	public static interface OnRowSelectedListener<T>
+	{
+		void onRowSelected(Cursor cursor, T Object);
+	}
 	/**
 	 * collection of classes that will be automatically converted to database tables in on create
 	 * and upgraded in opUpgrade
@@ -241,6 +245,18 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 			result.add(table.getRow(cursor, type));
 		}
 		return result;
+	}
+	
+	/**
+	 * Same as normal select() method, but uses callback to pass each row separately instead of returning a list.
+	 */
+	public static <T> void selectForeach(SQLiteDatabase database, Class<T> type, OnRowSelectedListener<T> onRowSelectedListener, String selection, String [] selectionArgs, String orderBy, String limit)
+	{
+		Table table = new Table(type);
+		
+		Cursor cursor = database.query(table.getName(), null, selection, selectionArgs, null, null, orderBy, limit);
+		while (cursor.moveToNext())
+			onRowSelectedListener.onRowSelected(cursor, table.getRow(cursor, type));
 	}
 	
 	/**
