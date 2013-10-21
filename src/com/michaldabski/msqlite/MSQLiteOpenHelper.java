@@ -13,7 +13,6 @@ import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.location.Address;
 import android.os.Build;
 import android.util.Log;
 
@@ -27,7 +26,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 * collection of classes that will be automatically converted to database tables in on create
 	 * and upgraded in opUpgrade
 	 */
-	private final Collection<Class<?>> classes  = new HashSet<Class<?>>();
+	protected final Collection<Class<?>> classes  = new HashSet<Class<?>>();
 	
 	// Constructors
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
