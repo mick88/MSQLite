@@ -247,6 +247,21 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		return result;
 	}
 	
+	public static <T> T selectFirst(SQLiteDatabase database, Class<T> type, String selection, String [] selectionArgs, String orderBy)
+	{
+		Table table = new Table(type);
+		Cursor cursor = database.query(table.getName(), null, selection, selectionArgs, null, null, orderBy, "1");
+		final T result;
+
+		if (cursor.moveToFirst())
+			result = table.getRow(cursor, type);
+		else 
+			result = null;
+
+		cursor.close();
+		return result;
+	}
+	
 	/**
 	 * Same as normal select() method, but uses callback to pass each row separately instead of returning a list.
 	 */
