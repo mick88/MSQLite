@@ -244,6 +244,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		{
 			result.add(table.getRow(cursor, type));
 		}
+		cursor.close();
 		return result;
 	}
 	
@@ -272,6 +273,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 		Cursor cursor = database.query(table.getName(), null, selection, selectionArgs, null, null, orderBy, limit);
 		while (cursor.moveToNext())
 			onRowSelectedListener.onRowSelected(cursor, table.getRow(cursor, type));
+		cursor.close();
 	}
 	
 	/**
