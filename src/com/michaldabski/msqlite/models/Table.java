@@ -5,6 +5,7 @@ import java.io.NotSerializableException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -104,8 +105,9 @@ public class Table
 		else 
 			this.name = type.getSimpleName();
 		
-		Field [] fields = type.getDeclaredFields();
-		this.columns = new ArrayList<Column>(fields.length);
+		List<Field> fields = new ArrayList<Field>();
+		getAllFields(type, fields);
+		this.columns = new ArrayList<Column>(fields.size());
 		this.primaryKeys = new ArrayList<Column>(1);
 		for (Field field : fields)
 		{
@@ -115,6 +117,13 @@ public class Table
 			columns.add(column);
 			if (column.PRIMARY_KEY) primaryKeys.add(column);
 		}
+	}
+	
+	private static void getAllFields(Class<?> type, List<Field> fields)
+	{
+		if (type == null) return;
+		fields.addAll(Arrays.asList(type.getDeclaredFields()));
+		getAllFields(type.getSuperclass(), fields);
 	}
 	
 	/**
