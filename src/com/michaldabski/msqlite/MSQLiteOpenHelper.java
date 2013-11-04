@@ -236,10 +236,15 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper
 	 */
 	public static <T> List<T> select(SQLiteDatabase database, Class<T> type, String selection, String [] selectionArgs, String orderBy, String limit)
 	{
+		return select(database, type, null, selection, selectionArgs, orderBy, limit);
+	}
+	
+	public static <T> List<T> select(SQLiteDatabase database, Class<T> type, String [] columns, String selection, String [] selectionArgs, String orderBy, String limit)
+	{
 		List<T> result = new ArrayList<T>();
 		Table table = new Table(type);
 		
-		Cursor cursor = database.query(table.getName(), null, selection, selectionArgs, null, null, orderBy, limit);
+		Cursor cursor = database.query(table.getName(), columns, selection, selectionArgs, null, null, orderBy, limit);
 		while (cursor.moveToNext())
 		{
 			result.add(table.getRow(cursor, type));
