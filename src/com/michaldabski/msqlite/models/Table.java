@@ -111,7 +111,7 @@ public class Table
 		this.primaryKeys = new ArrayList<Column>(1);
 		for (Field field : fields)
 		{
-			if ((field.getModifiers() & (Modifier.TRANSIENT | Modifier.STATIC | Modifier.FINAL)) > 0) continue;
+			if ((field.getModifiers() & (Modifier.TRANSIENT | Modifier.STATIC | Modifier.FINAL)) != 0) continue;
 			Column column = new Column(field, this);
 			if (column.getDataType() == null) continue;
 			columns.add(column);
