@@ -15,9 +15,7 @@ import com.michaldabski.msqlite.DataTypes;
  *
  */
 public class Column
-{
-	// Real underlying type
-	
+{	
 	private final Field field;
 	protected boolean 
 		NOT_NULL, 
