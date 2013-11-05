@@ -321,6 +321,8 @@ public class Table
 		int columnId = -1;
 		for (Column column : columns)
 		{
+			// If field is not present, continue.
+			// This is to prevent exceptions in case user is selecting a subset of columns
 			if ((columnId = cursor.getColumnIndex(column.name)) == -1) continue;
 			if (cursor.isNull(columnId))
 				column.setValue(result, (Object)null);
