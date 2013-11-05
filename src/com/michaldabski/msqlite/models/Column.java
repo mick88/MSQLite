@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.michaldabski.msqlite.Annotations.ColumnName;
 import com.michaldabski.msqlite.Annotations.DataType;
+import com.michaldabski.msqlite.Annotations.Default;
 import com.michaldabski.msqlite.DataTypes;
 
 /**
@@ -29,6 +30,7 @@ public class Column
 		// table.field
 		uniqueName;
 	private final int fieldType;
+	private final String defultValue;
 	
 	public static Column fromCursor(Cursor cursor, Table table)
 	{
@@ -39,14 +41,14 @@ public class Column
 				FIELD_PK = 5;
 		String name = cursor.getString(FIELD_NAME);
 		Column column = new Column(null, cursor.getInt(FIELD_NOT_NULL)==1, cursor.getInt(FIELD_PK)==1, name, 
-				cursor.getString(FIELD_TYPE), table.getName()+"."+name, DataTypes.TYPE_NA);
+				cursor.getString(FIELD_TYPE), table.getName()+"."+name, DataTypes.TYPE_NA, cursor.getString(FIELD_DEF_VALUE));
 		
 		return column;
 	}
 	
 	private Column(Field field, boolean nOT_NULL, boolean pRIMARY_KEY,
 			String name, String dataType, String uniqueName,
-			int fieldType)
+			int fieldType, String defaultValue)
 	{
 		this.field = field;
 		NOT_NULL = nOT_NULL;
@@ -55,6 +57,7 @@ public class Column
 		this.dataType = dataType;
 		this.uniqueName = uniqueName;
 		this.fieldType = fieldType;
+		this.defultValue = defaultValue;
 	}
 
 	public Column(Field field, Table table)
@@ -64,6 +67,9 @@ public class Column
 		if (field.isAnnotationPresent(ColumnName.class)) this.name = field.getAnnotation(ColumnName.class).value();
 		else this.name = field.getName();
 		
+		if (field.isAnnotationPresent(Default.class)) this.defultValue = field.getAnnotation(Default.class).value();
+		else this.defultValue = null; 
+			
 		this.uniqueName = String.format("%s.%s", table.getName(), name);
 		
 		fieldType = DataTypes.getFieldType(field.getType());
@@ -96,6 +102,9 @@ public class Column
 			.append('`')
 			.append(' ')
 			.append(this.dataType);
+		
+		if (defultValue != null)
+			builder.append(" DEFAULT '").append(defultValue).append("'");
 		
 		
 		if (NOT_NULL == true) builder.append(" NOT");
