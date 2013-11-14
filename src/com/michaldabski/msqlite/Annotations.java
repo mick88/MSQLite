@@ -53,4 +53,14 @@ public class Annotations
 	public static @interface ColumnName{
 		String value();
 	}
+	
+	/**
+	 * Default field value for database
+	 * @author Michal
+	 *
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	public static @interface Default{
+		String value();
+	}
 }
