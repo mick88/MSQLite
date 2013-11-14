@@ -8,6 +8,7 @@ import android.util.Log;
 import com.michaldabski.msqlite.Annotations.ColumnName;
 import com.michaldabski.msqlite.Annotations.DataType;
 import com.michaldabski.msqlite.DataTypes;
+import com.michaldabski.msqlite.SerializationUtils;
 
 /**
  * Represents Table column
@@ -161,30 +162,6 @@ public class Column
 		}
 	}
 	
-	public void setValue(Object object, Long value) throws IllegalArgumentException
-	{
-		try
-		{
-			switch (fieldType)
-			{
-				case DataTypes.TYPE_INT:
-					field.set(object, value.intValue());
-					break;
-				case DataTypes.TYPE_LONG:
-					field.set(object, value);
-					break;
-				case DataTypes.TYPE_BYTE:
-					field.set(object, value.byteValue());
-					break;
-			}
-		} catch (IllegalAccessException e)
-		{
-			field.setAccessible(true);
-			setValue(object, value);
-			field.setAccessible(false);
-		}
-	}
-	
 	public int getFieldType()
 	{
 		return fieldType;
@@ -195,57 +172,56 @@ public class Column
 		return PRIMARY_KEY;
 	}
 	
-	public void setValueFromString(Object object, String value) throws IllegalArgumentException
+	public void setValue(Object object, Cursor cursor, final int columnId)
 	{
-		try
-		{
-			if (value == null)
-				field.set(object, null);
-			switch (fieldType)
-			{
-				case DataTypes.TYPE_STRING:
-					field.set(object, value);
-					break;
+		if (cursor.isNull(columnId))
+			setValue(object, (Object)null);
 
-				case DataTypes.TYPE_INT:
-					field.set(object, Integer.valueOf(value));
-					break;
-					
-				case DataTypes.TYPE_LONG:
-					field.set(object, Long.valueOf(value));
-					break;
-					
-				case DataTypes.TYPE_DOUBLE:
-					field.set(object, Double.valueOf(value));
-					break;
-					
-				case DataTypes.TYPE_FLOAT:
-					field.set(object, Float.valueOf(value));
-					break;
-					
-				case DataTypes.TYPE_BYTE:
-					field.set(object, Byte.valueOf(value));
-					break;
-					
-				case DataTypes.TYPE_CHAR:
-					field.set(object, value.charAt(0));
-					break;					
-					
-				case DataTypes.TYPE_SHORT:
-					field.set(object, Short.valueOf(value));
-					break;
-					
-				case DataTypes.TYPE_BOOL:
-					int i = Integer.valueOf(value);
-					field.set(object, i != 0);
-					break;
-			}				
-		} 
-		catch (IllegalAccessException e)
+		switch (fieldType)
 		{
-			field.setAccessible(true);
-			setValueFromString(object, value);
-			field.setAccessible(false);
+			case DataTypes.TYPE_STRING:
+				setValue(object, cursor.getString(columnId));
+				break;
+				
+			case DataTypes.TYPE_BOOL:
+				setValue(object, cursor.getShort(columnId) != 0);
+				break;
+				
+			case DataTypes.TYPE_BYTE:
+				setValue(object, (byte)cursor.getShort(columnId));
+				break;
+			case DataTypes.TYPE_CHAR:
+				setValue(object, (char)cursor.getShort(columnId));
+				break;
+			case DataTypes.TYPE_SHORT:
+				setValue(object, cursor.getShort(columnId));
+				break;
+				
+			case DataTypes.TYPE_DOUBLE:
+				setValue(object, cursor.getDouble(columnId));
+				break;
+			case DataTypes.TYPE_FLOAT:
+				setValue(object, (float)cursor.getDouble(columnId));
+				break;
+				
+			case DataTypes.TYPE_INT:
+				setValue(object, cursor.getInt(columnId));
+				break;
+				
+			case DataTypes.TYPE_LONG:
+				setValue(object, cursor.getLong(columnId));
+				break;
+			
+			case DataTypes.TYPE_SERIALIZABLE:
+				byte [] bytes = cursor.getBlob(columnId);
+				try
+				{
+					setValue(object, SerializationUtils.deserialize(bytes));
+				} catch (Exception e)
+				{
+					throw new RuntimeException(e);
+				}
+				break;
 		}
 	}
 }

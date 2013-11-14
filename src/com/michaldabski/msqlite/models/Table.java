@@ -324,20 +324,7 @@ public class Table
 			// If field is not present, continue.
 			// This is to prevent exceptions in case user is selecting a subset of columns
 			if ((columnId = cursor.getColumnIndex(column.name)) == -1) continue;
-			if (cursor.isNull(columnId))
-				column.setValue(result, (Object)null);
-			else if (column.getFieldType() == DataTypes.TYPE_SERIALIZABLE)
-			{
-				try
-				{
-					column.setValue(result, SerializationUtils.deserialize(cursor.getBlob(columnId)));
-				} catch (Exception e)
-				{
-					throw new RuntimeException(e);
-				}
-			}
-			else
-				column.setValueFromString(result, cursor.getString(columnId));
+			column.setValue(result, cursor, columnId);
 		}
 		
 		return result;
