@@ -148,7 +148,7 @@ public class Table
 	{
 		Column primaryKey = getIntegerPrimaryKey();
 		if (primaryKey != null && id != -1)
-			primaryKey.setValue(object, id);
+			primaryKey.setIntegerValue(object, id);
 	}
 	
 	/**

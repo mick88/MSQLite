@@ -233,4 +233,33 @@ public class Column
 				break;
 		}
 	}
+
+	protected void setIntegerValue(Object instance, long number)
+	{
+		switch (fieldType)
+		{
+			case DataTypes.TYPE_LONG:
+				setValue(instance, number);
+				break;
+				
+			case DataTypes.TYPE_INT:
+				setValue(instance, (int)number);
+				break;
+				
+			case DataTypes.TYPE_SHORT:
+				setValue(instance, (short) number);
+				break;
+				
+			case DataTypes.TYPE_BYTE:
+				setValue(instance, (byte) number);
+				break;
+				
+			case DataTypes.TYPE_CHAR:
+				setValue(instance, (char) number);
+				break;
+				
+			default:
+				throw new IllegalArgumentException("Invalid integer field type");
+		}
+	}
 }
