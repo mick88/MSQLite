@@ -15,9 +15,12 @@ gen/
 # Local configuration file (sdk path, etc)
 local.properties
 
-# Additional
-target
-.settings
+# Eclipse project files
 .classpath
 .project
-*.log
+
+# Android Studio
+.idea
+.gradle
+build/
+*.iml
