@@ -223,7 +223,6 @@ public class Table
                     {
                         char charValue = (Character)value;
                         values.put(column.name, (short)charValue);
-                        System.out.println("saved char value "+(short)charValue);
                     }
                     else
                     {

@@ -1,4 +1,15 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.robolectric.gradle:gradle-android-test-plugin:0.10.0'
+    }
+}
+
 apply plugin: 'com.android.library'
+apply plugin: 'android-test'
 
 android {
     compileSdkVersion 20
@@ -16,4 +27,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
+    sourceSets {
+        androidTest.setRoot('src/test')
+    }
+
+    androidTest {
+        include '**/*Test.class'
+        maxHeapSize = "2048m"
+    }
+}
+
+dependencies {
+    androidTestCompile 'junit:junit:4.10'
+    androidTestCompile 'org.robolectric:robolectric:2.3'
+    androidTestCompile 'com.squareup:fest-android:1.0.+'
+    androidTestCompile 'com.google.guava:guava:17.+'
 }
