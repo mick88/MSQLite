@@ -1,5 +1,12 @@
 package com.michaldabski.msqlite.models;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+
+import com.michaldabski.msqlite.Annotations.TableName;
+import com.michaldabski.msqlite.DataTypes;
+import com.michaldabski.msqlite.SerializationUtils;
+
 import java.io.IOException;
 import java.io.NotSerializableException;
 import java.lang.reflect.Field;
@@ -8,13 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import android.content.ContentValues;
-import android.database.Cursor;
-
-import com.michaldabski.msqlite.Annotations.TableName;
-import com.michaldabski.msqlite.DataTypes;
-import com.michaldabski.msqlite.SerializationUtils;
 
 /**
  * Represents a table in SQLite database. 
@@ -217,8 +217,19 @@ public class Table
 					values.putNull(column.name);
 				else if (column.getFieldType() == DataTypes.TYPE_SERIALIZABLE)
 					values.put(column.name, SerializationUtils.serialize(value));
-				else 
-					values.put(column.name, value.toString());
+				else
+                {
+                    if (value instanceof Character)
+                    {
+                        char charValue = (Character)value;
+                        values.put(column.name, (short)charValue);
+                        System.out.println("saved char value "+(short)charValue);
+                    }
+                    else
+                    {
+                        values.put(column.name, value.toString());
+                    }
+                }
 			} catch (NoSuchFieldException e)
 			{
 				e.printStackTrace();
