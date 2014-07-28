@@ -1,7 +1,5 @@
 package com.michaldabski.msqlite.models;
 
-import java.lang.reflect.Field;
-
 import android.database.Cursor;
 import android.util.Log;
 
@@ -10,6 +8,8 @@ import com.michaldabski.msqlite.Annotations.DataType;
 import com.michaldabski.msqlite.Annotations.Default;
 import com.michaldabski.msqlite.DataTypes;
 import com.michaldabski.msqlite.SerializationUtils;
+
+import java.lang.reflect.Field;
 
 /**
  * Represents Table column
@@ -184,7 +184,10 @@ public class Column
 	public void setValue(Object object, Cursor cursor, final int columnId)
 	{
 		if (cursor.isNull(columnId))
-			setValue(object, (Object)null);
+        {
+            setValue(object, (Object) null);
+            return;
+        }
 
 		switch (fieldType)
 		{
