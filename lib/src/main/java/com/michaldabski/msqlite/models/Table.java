@@ -273,11 +273,9 @@ public class Table
 				else result[i] = value.toString();
 			} catch (IllegalArgumentException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchFieldException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
