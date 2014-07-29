@@ -1,15 +1,22 @@
 package com.michaldabski.msqlite.queries;
 
+import com.michaldabski.msqlite.models.Table;
+
 public class Drop extends QueryBuilder
 {
 	private boolean ifExists = false;
 	
 	public Drop(Class<?> type)
 	{
-		super(type);
+		this(new Table(type));
 	}
-	
-	@Override
+
+    public Drop(Table table)
+    {
+        super(table);
+    }
+
+    @Override
 	public String build()
 	{
 		StringBuilder builder = new StringBuilder("DROP TABLE ");

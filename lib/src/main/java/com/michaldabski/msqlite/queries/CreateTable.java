@@ -1,11 +1,11 @@
 package com.michaldabski.msqlite.queries;
 
-import java.util.List;
-
 import android.util.Log;
 
 import com.michaldabski.msqlite.models.Column;
 import com.michaldabski.msqlite.models.Table;
+
+import java.util.List;
 
 public class CreateTable extends QueryBuilder
 {
@@ -14,7 +14,7 @@ public class CreateTable extends QueryBuilder
 
 	public CreateTable(Class<?> type)
 	{
-		super(type);
+		this(new Table(type));
 	}
 	
 	public CreateTable(Table table)

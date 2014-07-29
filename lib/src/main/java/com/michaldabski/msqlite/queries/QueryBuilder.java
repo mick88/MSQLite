@@ -11,7 +11,7 @@ public abstract class QueryBuilder
 	@Deprecated
 	public QueryBuilder(Class<?> type)
 	{
-		this.table = new Table(type);
+        this(new Table(type));
 	}
 	
 	public QueryBuilder(Table table)
