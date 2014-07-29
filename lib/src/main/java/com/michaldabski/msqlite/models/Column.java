@@ -139,7 +139,6 @@ public class Column
 	
 	public Object getValue(Object object) throws IllegalArgumentException, NoSuchFieldException
 	{
-//		return fieldClass.cast(object.getClass().getField(fieldName).get(object))
 		try
 		{
 			Object value = field.get(object);

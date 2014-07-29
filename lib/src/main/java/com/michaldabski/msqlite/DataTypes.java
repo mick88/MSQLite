@@ -8,7 +8,6 @@ public class DataTypes
 		TYPE_NA = -1,
 		TYPE_OTHER = 100,
 		TYPE_STRING = 101,
-		TYPE_COLLECTION = 102,
 		TYPE_SERIALIZABLE = 103,
 		TYPE_INT = 201,
 		TYPE_LONG = 202,
@@ -25,10 +24,7 @@ public class DataTypes
 		DATA_TYPE_INTEGER = "INTEGER",
 		DATA_TYPE_NUMERIC = "NUMERIC",
 		DATA_TYPE_REAL = "REAL",
-		DATA_TYPE_VARCHAR = DATA_TYPE_TEXT,	
-		DATA_TYPE_DOUBLE = DATA_TYPE_REAL,
 		DATA_TYPE_FLOAT = DATA_TYPE_REAL,
-		DATA_TYPE_BOOLEAN = DATA_TYPE_NUMERIC,
 		DATA_TYPE_NONE = "NONE",
 		DATA_TYPE_BLOB = DATA_TYPE_NONE;
 	
@@ -83,8 +79,6 @@ public class DataTypes
 			return TYPE_SHORT;
 		else if (cls.isAssignableFrom(Boolean.class) || cls.isAssignableFrom(boolean.class))
 			return TYPE_BOOL;
-//		else if (cls.isAssignableFrom(Collection.class))
-//			return TYPE_COLLECTION;
 		else return TYPE_SERIALIZABLE;
 	}
 }

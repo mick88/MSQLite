@@ -23,8 +23,7 @@ public abstract class QueryBuilder
 	{
 		return table;
 	}
-	
-//	public abstract <T> Result<T> execute(Class<T> type);
+
 	public abstract String build();
 	
 	/**

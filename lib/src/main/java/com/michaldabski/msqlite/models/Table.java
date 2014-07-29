@@ -318,7 +318,6 @@ public class Table
 		try
 		{
 			result = type.newInstance();
-//			type.getDeclaredConstructor(parameterTypes)
 		} catch (IllegalAccessException e)
 		{
 			e.printStackTrace();
