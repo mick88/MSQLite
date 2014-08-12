@@ -6,8 +6,11 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.12.+'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
     }
 }
+
+apply plugin: 'com.jfrog.bintray'
 
 allprojects {
     repositories {
