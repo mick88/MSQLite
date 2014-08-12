@@ -17,3 +17,30 @@ allprojects {
         jcenter()
     }
 }
+
+bintray {
+    user = 'michaldabski'
+    key = '2aae7e89689ddd47862e7c5f20c5268ca06b9fd1'
+
+    configurations = ['deployables'] //When uploading configuration files
+//    publications = ['mavenStuff'] //When uploading Maven-based publication files
+    dryRun = false //Whether to run this as dry-run, without deploying
+    publish = false //If version should be auto published after an upload
+    pkg {
+        repo = 'maven'
+        name = 'MSQLite'
+        desc = 'Sqlite wrapper'
+        websiteUrl = 'https://github.com/mick88/MSQLite'
+        issueTrackerUrl = 'https://github.com/mick88/MSQLite/issues'
+        vcsUrl = 'git@github.com:mick88/MSQLite.git'
+        licenses = ['MIT']
+        publicDownloadNumbers = true
+        //Optional version descriptor
+        version {
+            name = '1.0' //Bintray logical version name
+            vcsTag = '1.0'
+            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+        }
+    }
+
+}
